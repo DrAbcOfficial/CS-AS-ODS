@@ -143,7 +143,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.CritError(LangData.lg.SQL.ConError, e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError+ ": "+ e.Message.ToString());
             }
             return false;
         }
