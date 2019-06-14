@@ -20,13 +20,13 @@ namespace CsAsODS
                     FileStream fs = new FileStream(outPath, FileMode.Create);
                     StreamWriter sw = new StreamWriter(fs);
                     //开始写入
-                    sw.Write( outContent);
-                    //清空缓冲区
+                    sw.Write(outContent);
+                    //清空缓存区
                     sw.Flush();
                     //关闭流
                     sw.Close();
                     fs.Close();
-                        CCUtility.g_Utility.FileIOLog(LangData.lg.General.CreateWrite + ": " + outPath + "....");
+                    CCUtility.g_Utility.FileIOLog(LangData.lg.General.CreateWrite + ": " + outPath + "....");
                 }
                 catch (Exception e)
                 {
@@ -41,12 +41,12 @@ namespace CsAsODS
                     StreamWriter sw = new StreamWriter(fs);
                     //开始写入
                     sw.Write(outContent);
-                    //清空缓冲区
+                    //清空缓存区
                     sw.Flush();
                     //关闭流
                     sw.Close();
                     fs.Close();
-                        CCUtility.g_Utility.FileIOLog(LangData.lg.General.Writted + ": " + outPath + "....");
+                    CCUtility.g_Utility.FileIOLog(LangData.lg.General.Writted + ": " + outPath + "....");
                 }
                 catch (Exception e)
                 {

@@ -8,11 +8,17 @@ namespace CsAsODS
 {
     public class GeoIP
     {
+        FileSystemWatcher fsw = null;
+        public void Stop()
+        {
+            fsw.EnableRaisingEvents = false;
+            fsw.Dispose();
+        }
         public void GeoWatcher()
         {
             CCUtility.g_Utility.Succ(LangData.lg.GeoIP.Geoing);
             //监视文件
-            FileSystemWatcher fsw = new FileSystemWatcher
+            fsw = new FileSystemWatcher
             {
                 //获取程序路径
                 Path = Program.FileDir,
@@ -34,7 +40,6 @@ namespace CsAsODS
                 CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.GeoIP.Changed);
                 try { Write(GeoIt(Reader.g_Reader.ReadIt(e.FullPath).Split(',')[1].Split(':')[0]), Reader.g_Reader.ReadIt(e.FullPath).Split(',')[0]); }
                 catch (Exception ex) { CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error + ": " + ex.Message.ToString()); }
-                
             }
             //写
             void Write(in string output, in string ID)
@@ -44,8 +49,8 @@ namespace CsAsODS
                 string str = Reader.g_Reader.ReadIt(outPath);
                 bool IsExs = false;
 
-                string[]cache = str.Split('\n');
-                for(int i =0;i< cache.Length;i++)
+                string[] cache = str.Split('\n');
+                for (int i = 0; i < cache.Length; i++)
                 {
                     string[] zj = cache[i].Split(',');
                     if (zj[0] == ID)
@@ -57,12 +62,12 @@ namespace CsAsODS
 
                 string op = "";
                 for (int i = 0; i < cache.Length; i++)
-                { 
-                    if(!string.IsNullOrEmpty(cache[i]))
-                       op = op + cache[i] + "\n";
+                {
+                    if (!string.IsNullOrEmpty(cache[i]))
+                        op = op + cache[i] + "\n";
                 }
                 if (!IsExs)
-                   op = op + ID + "," + FormatIpBack(output);
+                    op = op + ID + "," + FormatIpBack(output);
 
                 CCWriter.g_Writer.Writer(outPath, op);
             }
@@ -70,7 +75,7 @@ namespace CsAsODS
             //规范格式
             string FormatIpBack(in string Input)
             {
-                if(string.IsNullOrEmpty(Input))
+                if (string.IsNullOrEmpty(Input))
                 {
                     CCUtility.g_Utility.Error(LangData.lg.General.EmptyInput);
                 }
@@ -92,13 +97,13 @@ namespace CsAsODS
                         {"timezone",ipd.timezone },
                         {"zip",ipd.zip } };
                     string output = "";
-                    for(int i = 0;i<ConfData.conf.GeoData.IPBackFormat.Length;i++)
+                    for (int i = 0; i < ConfData.conf.GeoData.IPBackFormat.Length; i++)
                     {
                         output = output + dic[ConfData.conf.GeoData.IPBackFormat[i]] + (i == ConfData.conf.GeoData.IPBackFormat.Length - 1 ? "" : ",");
                     }
                     return output;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     CCUtility.g_Utility.Error(e.Message);
                 }
@@ -117,7 +122,7 @@ namespace CsAsODS
                     CCUtility.g_Utility.Dialog(LangData.lg.GeoIP.SendingAdd + ": " + ipAdd + "...");
 
                 //发送地址
-                string url = "http://ip-api.com/json/" + ipAdd  + "?lang=" + ConfData.conf.General.Lang;
+                string url = "http://ip-api.com/json/" + ipAdd + "?lang=" + ConfData.conf.General.Lang;
                 string str = "";
                 WebRequest wRequest = WebRequest.Create(url);
                 wRequest.Method = "GET";
@@ -131,7 +136,7 @@ namespace CsAsODS
                 catch (WebException e)
                 {
                     //发生网络错误时,获取错误响应信息
-                    CCUtility.g_Utility.Error( LangData.lg.GeoIP.NetError + " " + e.Message + ".");
+                    CCUtility.g_Utility.Error(LangData.lg.GeoIP.NetError + " " + e.Message + ".");
                 }
                 catch (Exception e)
                 {
@@ -148,9 +153,9 @@ namespace CsAsODS
                         //url返回的值  
                         str = Reader.g_Reader.StreamReader(stream);
                         wResponse.Close();
-                        CCUtility.g_Utility.Dialog(LangData.lg.GeoIP.IPAddSucc);
+                        CCUtility.g_Utility.Succ(LangData.lg.GeoIP.IPAddSucc);
                     }
-                   else
+                    else
                         CCUtility.g_Utility.Warn(LangData.lg.GeoIP.EmptyRespond);
                 }
                 return str;

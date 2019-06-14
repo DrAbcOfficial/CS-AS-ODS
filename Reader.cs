@@ -18,7 +18,7 @@ namespace CsAsODS
                     String line = sr.ReadToEnd();
                     //关闭流
                     sr.Close();
-                        CCUtility.g_Utility.FileIOLog(LangData.lg.General.ReadingFile + ":" + GeoFile + "...");
+                    CCUtility.g_Utility.FileIOLog(LangData.lg.General.ReadingFile + ":" + GeoFile + "...");
                     //去分隔符
                     return line;
                 }
@@ -56,7 +56,7 @@ namespace CsAsODS
             {
                 StreamReader sr = new StreamReader(json, Encoding.UTF8);
                 //开始读取
-                String line = sr.ReadToEnd();
+                string line = sr.ReadToEnd();
                 //关闭流
                 sr.Close();
                 CCUtility.g_Utility.Dialog(LangData.lg.General.ReadingJson);

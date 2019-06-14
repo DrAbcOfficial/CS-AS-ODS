@@ -37,6 +37,12 @@ namespace CsAsODS
         public string Database { get; set; } = "Ecco";
         public string Account { get; set; } = "root";
         public string Password { get; set; } = "secret";
+        public string[] Structure { get; set; } = {
+            "ID",
+            "SteamID",
+            "NickName",
+            "Ecco"
+        };
         public string SQLInput { get; set; } = "SQLInput.txt";
         public string SQLOutput { get; set; } = "SQLOutput.txt";
         public string SQLChangeput { get; set; } = "SQLChangeput.txt";
@@ -68,7 +74,7 @@ namespace CsAsODS
                 {
                     CCUtility.g_Utility.CritError(
                         "文件格式不正确！无法读取配置文件！请检查json文件拼写！\n" +
-                        "The file format is incorrect! Unable to read the configuration file! Please check the spelling of JSON file!\n" ,
+                        "The file format is incorrect! Unable to read the configuration file! Please check the spelling of JSON file!\n",
                         "错误代码/Error Code: " + e.Message.ToString() + "\n");
                     return false;
                 }
