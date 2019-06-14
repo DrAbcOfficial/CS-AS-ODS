@@ -1,0 +1,4 @@
+name: Medkit
+cost: 1
+category: Melee & Essentials & Ammo
+give weapon_medkit

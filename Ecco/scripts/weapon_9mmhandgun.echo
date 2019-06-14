@@ -1,0 +1,4 @@
+name: 9mm Pistol
+cost: 5
+category: Secondary
+give weapon_9mmhandgun

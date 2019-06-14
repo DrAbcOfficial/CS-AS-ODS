@@ -1,0 +1,4 @@
+name: Grenade
+cost: 10
+category: Throwable
+give weapon_handgrenade

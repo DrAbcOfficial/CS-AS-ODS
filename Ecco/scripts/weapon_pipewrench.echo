@@ -1,0 +1,4 @@
+name: Wrench
+cost: 2
+category: Melee & Essentials & Ammo
+give weapon_pipewrench

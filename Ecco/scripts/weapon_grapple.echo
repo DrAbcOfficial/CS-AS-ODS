@@ -1,0 +1,4 @@
+name: Grapple
+cost: 5
+category: Melee & Essentials & Ammo
+give weapon_grapple
