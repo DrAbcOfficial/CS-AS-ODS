@@ -1,6 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Diagnostics;
 using System.Net;
 using System.Runtime.InteropServices;
 
@@ -10,14 +9,14 @@ namespace CsAsODS
     {
         //引用DLL
         [DllImport("kernel32.dll")]
-        public static extern IntPtr _lopen(string lpPathName, int iReadWrite);
+        static extern IntPtr _lopen(string lpPathName, int iReadWrite);
 
         [DllImport("kernel32.dll")]
-        public static extern bool CloseHandle(IntPtr hObject);
+        static extern bool CloseHandle(IntPtr hObject);
 
-        public const int OF_READWRITE = 2;
-        public const int OF_SHARE_DENY_NONE = 0x40;
-        public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
+        const int OF_READWRITE = 2;
+        const int OF_SHARE_DENY_NONE = 0x40;
+        static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
 
         //实例化
         public static CCUtility g_Utility = new CCUtility();
@@ -30,10 +29,10 @@ namespace CsAsODS
         public void Error(in string szInput)
         {
             TextColor("Red");
-            FormatCon("[ERROR]"  + szInput);
+            FormatCon("[ERROR]" + szInput);
             TextColor();
         }
-        public void CritError(in string szInput,in string szReason = "")
+        public void CritError(in string szInput, in string szReason = "")
         {
             TextColor("Red");
             FormatCon(
@@ -52,9 +51,7 @@ namespace CsAsODS
             TextColor("Magenta");
             FormatCon(szReason);
             TextColor();
-            Console.WriteLine("按任意键退出...\nPress any key to exit....\n");
-            Console.ReadKey(true);
-            Process.GetCurrentProcess().Kill();
+            Program.cts.Cancel();
         }
         public void CritWarn(in string szInput)
         {
@@ -116,9 +113,9 @@ namespace CsAsODS
             {
                 Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), colorName, true);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                throw ex;
+                CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error + ": " + e.Message.ToString());
             }
         }
         //占用判断防止报错
@@ -143,7 +140,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError+ ": "+ e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
             }
             return false;
         }

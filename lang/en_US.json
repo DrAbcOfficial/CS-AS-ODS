@@ -1,6 +1,6 @@
 {
     "General": {
-        "Exit": "Press q to exit",
+        "Exit": "Press any key to exit.....",
         "EmptyInput": "The input is empty",
         "ReadingFile": "Reading...",
         "ReadingStream": "Reading stream...",
@@ -13,7 +13,8 @@
         "ReadingJson": "Reading configuration file",
         "JsonReadFailed": "Configuration file reading failed!",
         "Running": "Success! The program is running!",
-		"QuestFinish": "All tasks have been completed!"
+		"QuestFinish": "All tasks have been completed!",
+		"ThreadEnd": "Thread Ended"
     },
     "GeoIP": {
         "Geoing": "GeoIP starts listening for files...",

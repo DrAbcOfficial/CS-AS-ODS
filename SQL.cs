@@ -10,6 +10,12 @@ namespace CsAsODS
 {
     class SQLRequest
     {
+        FileSystemWatcher fsw = null;
+        public void Stop()
+        {
+            fsw.EnableRaisingEvents = false;
+            fsw.Dispose();
+        }
         public void SQLWatcher()
         {
             CCUtility.g_Utility.Succ(LangData.lg.SQL.Running);
@@ -18,11 +24,11 @@ namespace CsAsODS
             MySqlConnection SQL_con = new MySqlConnection(
                     "server=" + ConfData.conf.SQLData.Server + ";" +
                     "port=" + ConfData.conf.SQLData.Port + ";" +
-                    "database=" +  ConfData.conf.SQLData.Database + ";" +
+                    "database=" + ConfData.conf.SQLData.Database + ";" +
                     "user=" + ConfData.conf.SQLData.Account + ";" +
-                    "password=" + ConfData.conf.SQLData.Password );
+                    "password=" + ConfData.conf.SQLData.Password);
 
-            if(CCUtility.g_Utility.SQLOpen(SQL_con))
+            if (CCUtility.g_Utility.SQLOpen(SQL_con))
                 if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == ConfData.conf.SQLData.Prefix + "_Ecco"))
                 {
                     CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
@@ -30,7 +36,7 @@ namespace CsAsODS
                 }
             SQL_con.Close();
             //监视文件
-            FileSystemWatcher fsw = new FileSystemWatcher
+            fsw = new FileSystemWatcher
             {
                 //获取程序路径
                 Path = Program.FileDir,
@@ -53,7 +59,7 @@ namespace CsAsODS
             void SQLFirstRun()
             {
                 string createStatement = String.Format("CREATE TABLE `{0}`.`{1}_Ecco` ( `{2}` INT NOT NULL AUTO_INCREMENT , `{3}` VARCHAR(24) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL , `{4}` VARCHAR(24) NOT NULL , `{5}` INT NOT NULL , PRIMARY KEY (`{2}`, `{3}`)) ENGINE = InnoDB;",
-                    ConfData.conf.SQLData.Database, ConfData.conf.SQLData.Prefix, "ID", "SteamID","NickName", "Ecco");
+                    ConfData.conf.SQLData.Database, ConfData.conf.SQLData.Prefix, ConfData.conf.SQLData.Structure[0], ConfData.conf.SQLData.Structure[1], ConfData.conf.SQLData.Structure[2], ConfData.conf.SQLData.Structure[3]);
                 // 建表
                 try
                 {
@@ -61,6 +67,7 @@ namespace CsAsODS
                     {
                         cmd.ExecuteNonQuery();
                     }
+                    CCUtility.g_Utility.Succ(LangData.lg.SQL.Updated);
                 }
                 catch (Exception e)
                 {
@@ -86,13 +93,17 @@ namespace CsAsODS
                 string[] outLine = Reader.g_Reader.ReadIt(outPath).Split('\n');
                 for (int i = 0; i < outLine.Length; i++)
                 {
-                    string[] zj = outLine[i].Split(',');
+
                     if (string.IsNullOrEmpty(outLine[i]))
                         continue;
-                    else if (zj[1] == line[0])
+                    else
                     {
-                        outLine[i] = Request(line[0], line[1]);
-                        IsExs = true;
+                        string[] zj = outLine[i].Split(',');
+                        if (zj[1] == line[0])
+                        {
+                            outLine[i] = Request(line[0], line[1]);
+                            IsExs = true;
+                        }
                     }
                 }
 
@@ -107,11 +118,11 @@ namespace CsAsODS
                 CCWriter.g_Writer.Writer(outPath, op);
 
                 SQL_con.Close();
-                if(empty.Count != 0)
+                if (empty.Count != 0)
                 {
                     CCUtility.g_Utility.SQLOpen(SQL_con);
                     string[][] ary = empty.ToArray();
-                    for(int i = 0;i < ary.Length;i ++)
+                    for (int i = 0; i < ary.Length; i++)
                     {
                         Insert(ary[i][0], ary[i][1], 0);
                     }
@@ -123,10 +134,11 @@ namespace CsAsODS
             void Insert(string szID, string szNick, int szEcco)
             {
                 CCUtility.g_Utility.Warn(LangData.lg.SQL.Insert + ": [" + szID + "]");
-                string str = String.Format("INSERT INTO `{0}_Ecco` (`SteamID`, `NickName`, `Ecco`) VALUES ('{1}', '{2}', '{3}')", ConfData.conf.SQLData.Prefix, szID, szNick, szEcco); ;
+                string str = String.Format("INSERT INTO `{0}_Ecco` (`{4}`, `{5}`, `{6}`) VALUES ('{1}', '{2}', '{3}')",
+                    ConfData.conf.SQLData.Prefix, szID, szNick, szEcco, ConfData.conf.SQLData.Structure[1], ConfData.conf.SQLData.Structure[2], ConfData.conf.SQLData.Structure[3]);
                 //更新SQL
                 MySqlCommand cmd = new MySqlCommand(str, SQL_con);
-                if (cmd.ExecuteNonQuery() >0)
+                if (cmd.ExecuteNonQuery() > 0)
                 {
                     CCUtility.g_Utility.Succ(LangData.lg.SQL.Inserted);
                 }
@@ -134,7 +146,8 @@ namespace CsAsODS
 
             string Request(string szID, string szNick)
             {
-                string str = String.Format("UPDATE `{0}_Ecco` SET `NickName` = '{2}' WHERE `{0}_Ecco`.`SteamID` = '{1}'; select * from {0}_Ecco where SteamID= '{1}'", ConfData.conf.SQLData.Prefix,szID,szNick);
+                string str = String.Format("UPDATE `{0}_Ecco` SET `{4}` = '{2}' WHERE `{0}_Ecco`.`{3}` = '{1}'; select * from {0}_Ecco where SteamID= '{1}'",
+                    ConfData.conf.SQLData.Prefix, szID, szNick, ConfData.conf.SQLData.Structure[1], ConfData.conf.SQLData.Structure[3]);
                 //设置查询命令
                 MySqlCommand cmd = new MySqlCommand(str, SQL_con);
                 MySqlDataReader reader = null;
@@ -147,7 +160,7 @@ namespace CsAsODS
                     if (!reader.HasRows)//不存在则加入列表
                     {
                         CCUtility.g_Utility.Warn(LangData.lg.SQL.Empty);
-                        string[] a  = { szID, szNick };
+                        string[] a = { szID, szNick };
                         empty.Add(a);
                     }
                     else

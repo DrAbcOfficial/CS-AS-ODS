@@ -12,7 +12,7 @@ namespace CsAsODS
     }
     public class LangGeneral
     {
-        public string Exit { get; set; } = "按q退出";
+        public string Exit { get; set; } = "按任意键退出....";
         public string EmptyInput { get; set; } = "输入的内容为空";
         public string ReadingFile { get; set; } = "正在读取...";
         public string ReadingFailed { get; set; } = "读取失败咯";
@@ -26,7 +26,8 @@ namespace CsAsODS
         public string JsonReadFailed { get; set; } = "配置文件读取失败！";
         public string Running { get; set; } = "成功！程序正在运行中！";
         public string QuestFinish { get; set; } = "所有任务已完成！";
-        
+        public string ThreadEnd { get; set; } = "线程已终止";
+
     }
     public class LangSQL
     {
@@ -64,12 +65,12 @@ namespace CsAsODS
         public static bool LangReader()
         {
             string json = Reader.g_Reader.JsonReader(Program.FileDir + "lang/" + ConfData.conf.General.Lang + ".json");
-            if(string.IsNullOrEmpty(json))
+            if (string.IsNullOrEmpty(json))
             {
                 CCUtility.g_Utility.CritWarn(
                     "语言文件为空，将使用默认语言.\n" +
                     "The language file is empty and the default language will be used.\n");
-                if(!File.Exists(Program.FileDir + "lang/zh-CN.json"))
+                if (!File.Exists(Program.FileDir + "lang/zh-CN.json"))
                     CreateJson();
                 return true;
             }
@@ -85,7 +86,7 @@ namespace CsAsODS
                     CCUtility.g_Utility.CritError(
                         "文件格式不正确！无法读取语言文件！请检查json文件拼写！\n" +
                         "The file format is incorrect! Unable to read the language file! Please check the spelling of JSON file!\n",
-                        "错误代码/Error Code: " + e.Message.ToString() + "\n") ;
+                        "错误代码/Error Code: " + e.Message.ToString() + "\n");
                     return false;
                 }
             }
@@ -94,7 +95,7 @@ namespace CsAsODS
             {
                 CCUtility.g_Utility.Warn("将生成默认语言文件\nThe default language file will be generated");
                 string zhcn = JsonConvert.SerializeObject(lg);
-                if(!Directory.Exists(Program.FileDir + "lang"))
+                if (!Directory.Exists(Program.FileDir + "lang"))
                     Directory.CreateDirectory(Program.FileDir + "lang");
                 CCWriter.g_Writer.Writer(Program.FileDir + "lang/zh-CN.json", zhcn);
                 CCUtility.g_Utility.Succ("默认语言文件输出完毕\nDefault Language File generated");

@@ -34,10 +34,10 @@ namespace CsAsODS
                 string[] line = str.Split('\n');
                 CCUtility.g_Utility.SQLOpen(SQL_con);
                 CCUtility.g_Utility.Succ(LangData.lg.SQL.Update);
-                for (int i =0;i < line.Length;i++)
+                for (int i = 0; i < line.Length; i++)
                 {
                     CCUtility.g_Utility.Taskbar(String.Format(LangData.lg.SQL.Remain, line.Length - i));
-                    if (!string.IsNullOrEmpty( line[i]))
+                    if (!string.IsNullOrEmpty(line[i]))
                     {
                         string[] sz = line[i].Split(',');
                         Update(sz[0], sz[1]);
@@ -47,9 +47,10 @@ namespace CsAsODS
                 SQL_con.Close();
             }
 
-            void Update(in string ID,in string Ecco)
+            void Update(in string ID, in string Ecco)
             {
-                string str = String.Format("UPDATE `{0}_Ecco` SET `Ecco` = '{2}' WHERE `{0}_Ecco`.`SteamID` = '{1}'",ConfData.conf.SQLData.Prefix, ID,Ecco);
+                string str = String.Format("UPDATE `{0}_Ecco` SET `{4}` = '{2}' WHERE `{0}_Ecco`.`{3}` = '{1}'", 
+                    ConfData.conf.SQLData.Prefix, ID, Ecco, ConfData.conf.SQLData.Structure[1], ConfData.conf.SQLData.Structure[3]);
                 //更新SQL
                 MySqlCommand cmd = new MySqlCommand(str, SQL_con);
                 if (cmd.ExecuteNonQuery() > 0)
