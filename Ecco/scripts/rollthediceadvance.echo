@@ -1,0 +1,9 @@
+name: RTDA
+cost: 100
+category: Roll the Dice
+{
+	25 gainallweapons
+	25 gainnoclip
+	25 gaingod
+	25 gainfreenuke
+}

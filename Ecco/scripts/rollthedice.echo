@@ -1,0 +1,17 @@
+name: RTD
+cost: 15
+category: Roll the Dice
+{
+	9 gainhelth
+	9 gainarmor
+	9 gainmeleesecweapons
+	9 gainheavyweapons
+	9 gainfreekill
+	9 gaingravity
+	9 gainghostmode
+	9 gainstrip
+	9 gainpoints
+	9 gainclip
+	9 gaininvisibility
+	9 gainpriweapons
+}

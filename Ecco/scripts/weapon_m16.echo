@@ -1,0 +1,4 @@
+name: M16 M203
+cost: 16
+category: Primary
+give weapon_m16

@@ -1,0 +1,4 @@
+name: Health Kit
+cost: 5
+category: Melee & Essentials & Ammo
+give item_healthkit

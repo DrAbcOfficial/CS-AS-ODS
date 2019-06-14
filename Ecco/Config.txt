@@ -1,0 +1,7 @@
+BuyMenuName	[Ecco]	(字符串) 购买菜单的名称
+BuyMenuDescription	Buy items with your money.	(字符串) 购买菜单的介绍
+ShowMoneyHUD	1	(整数) 显示金钱 HUD 的方式，0 为不显示，1 为显示全部，2 为仅显示金钱不显示金钱变化，3 为仅显示金钱变化不显示金钱
+ItemDisplayFormat	%NAME% - $%COST%	物品展示的格式，其中 %NAME% 为物品名称，%COST% 为物品价格
+ScoreToMoneyMultiplier	1	(浮点数) 玩家获得的分数转化为金钱的倍数
+LocaleAlreadyHave	很抱歉，但该物品似乎已在库存中存在！	(字符串) 本地化：在玩家已经拥有某件物品，不能再买的提示
+LocaleNotAllowed	很抱歉，但 Ecco 在此地图中已被禁用	(字符串) 本地化：该地图中 Ecco 被禁用的提示
