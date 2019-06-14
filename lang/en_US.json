@@ -1,0 +1,44 @@
+{
+    "General": {
+        "Exit": "Press q to exit",
+        "EmptyInput": "The input is empty",
+        "ReadingFile": "Reading...",
+        "ReadingStream": "Reading stream...",
+        "ReadingFailed": "Read failed",
+        "WriteEmpty": "Blank, abandon writing",
+        "Writted": "Write successfully!",
+        "CreateWrite": "Create a new file...",
+        "WriteFailed": "Write failed",
+        "WriteAcupied": "Occupied, not written",
+        "ReadingJson": "Reading configuration file",
+        "JsonReadFailed": "Configuration file reading failed!",
+        "Running": "Success! The program is running!",
+		"QuestFinish": "All tasks have been completed!"
+    },
+    "GeoIP": {
+        "Geoing": "GeoIP starts listening for files...",
+        "Changed": "Files are changed, searching IP database",
+        "EmptyIP": "Blank ip, no address obtained",
+        "NetError": "A network error occurred!",
+        "SendingAdd": "Sending Address to Server",
+        "Error": "Error occurred",
+        "IPAddSucc": "Success! Get the address!",
+        "EmptyRespond": "The response is empty!"
+    },
+    "SQL": {
+        "Running": "Running SQL Service",
+		"Connected": "SQL Server Connect Successful!",
+        "ConError": "SQL Server Connect Failed! Check the server or settings",
+        "ConNetError": "SQL Server Network Connect Failed! Check the server or settings",
+        "RequstError": "SQL query failed!",
+        "Changed": "SQL temporary file has changed, sending information!",
+		"Empty": "The query is empty!",
+		"FirstRun": "First run, start SQL initialization!",
+		"Insert": "Add records to SQL",
+		"Inserted": "Successful insert records!",
+		"Update": "Update records to SQL",
+		"Updated": "Successful update of records",
+		"UpdateFailed": "Failed to update the record!",
+		"Remain": "Remaining {0} records"
+    }
+}
