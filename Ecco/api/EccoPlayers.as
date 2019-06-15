@@ -181,6 +181,9 @@ class EccoPlayerInventory{
       file.Write(op);
       file.Close();
     }
+	@file = g_FileSystem.OpenFile("scripts/plugins/store/SQLFinish", OpenFile::WRITE);
+	file.Write("");
+	file.Close();
   }
 
   private void ShowDeductHUD(CBasePlayer@ pPlayer, int amount){
