@@ -61,10 +61,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileWathcer.cs" />
     <Compile Include="SQLJson.cs" />
     <Compile Include="SQLMongo.cs" />
     <Compile Include="FirstRun.cs" />
-    <Compile Include="SQLWrite.cs" />
     <Compile Include="SQL.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Writer.cs" />
