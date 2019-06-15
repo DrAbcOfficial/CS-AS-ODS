@@ -56,7 +56,7 @@ namespace CsAsODS
         public bool Persist { get; set; } = true;
         public bool Unicode { get; set; } = true;
         public string SSL { get; set; } = "none";
-        public string Encode { get; set; } = "UTF8";
+        public string Encode { get; set; } = "utf8";
         public string[] Structure { get; set; } = {
             "ID",
             "SteamID",

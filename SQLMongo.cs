@@ -81,7 +81,7 @@ namespace CsAsODS
 
         public void OnUpdate(object source, FileSystemEventArgs e)
         {
-            string changePath = Program.FileDir + ConfData.conf.SQLData.SQLFinish;
+            string changePath = Program.FileDir + ConfData.conf.SQLData.SQLChangeput;
             CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
             string str = Reader.g_Reader.ReadIt(changePath);
             string[] line = str.Split('\n');

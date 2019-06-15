@@ -34,7 +34,7 @@ namespace CsAsODS
                 }
                 if (ConfData.conf.SQLData.Enable)
                 {
-                    
+
                     Thread SQLThread = new Thread(new ThreadStart(FileWa.ThreadMethod));
                     SQLThread.Name = "SQLService";
                     SQLThread.Start();
