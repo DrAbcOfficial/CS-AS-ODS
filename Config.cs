@@ -31,6 +31,9 @@ namespace CsAsODS
     public class SQLData
     {
         public bool Enable { get; set; } = false;
+        public string SQLType { get; set; } = "MySql";
+        //MySql MariaDB MongoDB Json | Fuck H2
+        public int TimeOut { get; set; } = 7;
         public string Server { get; set; } = "localhost";
         public string Port { get; set; } = "3306";
         public string Prefix { get; set; } = "SvenCoop";

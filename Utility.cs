@@ -1,6 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Net;
 using System.Runtime.InteropServices;
 
 namespace CsAsODS
@@ -132,11 +131,6 @@ namespace CsAsODS
                 sql.Open();
                 CCUtility.g_Utility.Succ(LangData.lg.SQL.Connected);
                 return true;
-            }
-            catch (WebException e)
-            {
-                //发生网络错误时,获取错误响应信息
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConNetError + " " + e.Message + ".");
             }
             catch (Exception e)
             {
