@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 
 namespace CsAsODS
 {
@@ -19,7 +18,7 @@ namespace CsAsODS
                 try
                 {
                     FileStream fs = new FileStream(outPath, FileMode.Create);
-                    StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
+                    StreamWriter sw = new StreamWriter(fs);
                     //开始写入
                     sw.Write(outContent);
                     //清空缓存区
@@ -39,7 +38,11 @@ namespace CsAsODS
                 try
                 {
                     FileStream fs = new FileStream(outPath, FileMode.Create);
+<<<<<<< HEAD
                     StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
+=======
+                    StreamWriter sw = new StreamWriter(fs);
+>>>>>>> parent of 426089a... hahaha
                     //开始写入
                     sw.Write(outContent);
                     //清空缓存区

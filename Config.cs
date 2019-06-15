@@ -33,14 +33,6 @@ namespace CsAsODS
         public bool Enable { get; set; } = false;
         public string SQLType { get; set; } = "MySql";
         //MySql MariaDB MongoDB Json | Fuck H2
-        public SQLServerConfig SQLNet = new SQLServerConfig();
-        public string SQLInput { get; set; } = "SQLInput.txt";
-        public string SQLOutput { get; set; } = "SQLOutput.txt";
-        public string SQLChangeput { get; set; } = "SQLChangeput.txt";
-        public string SQLFinish { get; set; } = "SQLFinish";
-    }
-    public class SQLServerConfig
-    {
         public int TimeOut { get; set; } = 7;
         public string Server { get; set; } = "localhost";
         public string Port { get; set; } = "3306";
@@ -48,6 +40,7 @@ namespace CsAsODS
         public string Database { get; set; } = "Ecco";
         public string Account { get; set; } = "root";
         public string Password { get; set; } = "secret";
+<<<<<<< HEAD
 
         public MySQLConfig MySQL = new MySQLConfig();
     }
@@ -57,12 +50,17 @@ namespace CsAsODS
         public bool Unicode { get; set; } = true;
         public string SSL { get; set; } = "none";
         public string Encode { get; set; } = "utf8";
+=======
+>>>>>>> parent of 426089a... hahaha
         public string[] Structure { get; set; } = {
             "ID",
             "SteamID",
             "NickName",
             "Ecco"
         };
+        public string SQLInput { get; set; } = "SQLInput.txt";
+        public string SQLOutput { get; set; } = "SQLOutput.txt";
+        public string SQLChangeput { get; set; } = "SQLChangeput.txt";
     }
 
     public class ConfData
