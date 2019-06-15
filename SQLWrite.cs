@@ -7,10 +7,16 @@ namespace CsAsODS
     class SQLWrite
     {
         public MySqlConnection SQL_con = new MySqlConnection();
+        FileSystemWatcher fsw = null;
+        public void Stop()
+        {
+            fsw.EnableRaisingEvents = false;
+            fsw.Dispose();
+        }
         public void SQL()
         {
             //监视文件
-            FileSystemWatcher fsw = new FileSystemWatcher
+            fsw = new FileSystemWatcher
             {
                 //获取程序路径
                 Path = Program.FileDir,
@@ -28,7 +34,7 @@ namespace CsAsODS
 
             void OnChanged(object source, FileSystemEventArgs e)
             {
-                string changePath = Program.FileDir + ConfData.conf.SQLData.SQLChangeput;
+                string changePath = e.FullPath;
                 CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
                 string str = Reader.g_Reader.ReadIt(changePath);
                 string[] line = str.Split('\n');
@@ -49,7 +55,7 @@ namespace CsAsODS
 
             void Update(in string ID, in string Ecco)
             {
-                string str = String.Format("UPDATE `{0}_Ecco` SET `{4}` = '{2}' WHERE `{0}_Ecco`.`{3}` = '{1}'", 
+                string str = String.Format("UPDATE `{0}_Ecco` SET `{4}` = '{2}' WHERE `{0}_Ecco`.`{3}` = '{1}'",
                     ConfData.conf.SQLData.Prefix, ID, Ecco, ConfData.conf.SQLData.Structure[1], ConfData.conf.SQLData.Structure[3]);
                 //更新SQL
                 MySqlCommand cmd = new MySqlCommand(str, SQL_con);

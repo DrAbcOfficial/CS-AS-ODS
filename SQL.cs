@@ -11,14 +11,16 @@ namespace CsAsODS
     class SQLRequest
     {
         FileSystemWatcher fsw = null;
+        SQLWrite write = null;
         public void Stop()
         {
             fsw.EnableRaisingEvents = false;
             fsw.Dispose();
+            write.Stop();
         }
         public void SQLWatcher()
         {
-            CCUtility.g_Utility.Succ(LangData.lg.SQL.Running);
+            CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
             List<string[]> empty = new List<string[]>();
 
             MySqlConnection SQL_con = new MySqlConnection(
@@ -26,7 +28,8 @@ namespace CsAsODS
                     "port=" + ConfData.conf.SQLData.Port + ";" +
                     "database=" + ConfData.conf.SQLData.Database + ";" +
                     "user=" + ConfData.conf.SQLData.Account + ";" +
-                    "password=" + ConfData.conf.SQLData.Password);
+                    "password=" + ConfData.conf.SQLData.Password + ";" +
+                    "Connect Timeout=" + ConfData.conf.SQLData.TimeOut);
 
             if (CCUtility.g_Utility.SQLOpen(SQL_con))
                 if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == ConfData.conf.SQLData.Prefix + "_Ecco"))
@@ -52,7 +55,7 @@ namespace CsAsODS
             // 开始监听
             fsw.EnableRaisingEvents = true;
 
-            SQLWrite write = new SQLWrite();
+            write = new SQLWrite();
             write.SQL_con = SQL_con;
             write.SQL();
 

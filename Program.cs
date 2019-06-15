@@ -15,9 +15,9 @@ namespace CsAsODS
             Console.WriteLine(
                 "======          Sven-Coop C#-AngelScripts Object Detector System        ======\n" +
                 "====== ODS aka Ostade-Cylsilane if u wanna glue and detector something  ======");
-             //实例化
+            //实例化
             GeoIP g_GeoIP = null;
-            SQLRequest SQL = null;
+            object SQL = null;
             if (ConfData.JsReader() && LangData.LangReader())
             {
                 FirstInit fit = new FirstInit();
@@ -31,8 +31,15 @@ namespace CsAsODS
                 }
                 if (ConfData.conf.SQLData.Enable)
                 {
-                    SQL = new SQLRequest();
-                    Thread SQLThread = new Thread(new ThreadStart(SQL.SQLWatcher));
+                    switch (ConfData.conf.SQLData.SQLType)
+                    {
+                        default: SQL = new SQLRequest(); break;
+                        case "MySql": SQL = new SQLRequest(); break;
+                        case "MariaDB": SQL = new SQLRequest(); break;
+                        case "MongoDB": SQL = new MongoSQL(); break;
+                        case "Json": SQL = new JsonSQL(); break;
+                    }
+                    Thread SQLThread = new Thread(new ThreadStart(SQLMethod));
                     SQLThread.Name = "SQLService";
                     SQLThread.Start();
                 }
@@ -46,7 +53,14 @@ namespace CsAsODS
                         {
                             if (ConfData.conf.SQLData.Enable)
                             {
-                                SQL.Stop();
+                                switch (ConfData.conf.SQLData.SQLType)
+                                {
+                                    default: ((SQLRequest)SQL).Stop(); break;
+                                    case "MySql": ((SQLRequest)SQL).Stop(); break;
+                                    case "MariaDB": ((SQLRequest)SQL).Stop(); break;
+                                    case "MongoDB": ((MongoSQL)SQL).Stop(); break;
+                                    case "Json": ((JsonSQL)SQL).Stop(); break;
+                                }
                                 Console.WriteLine(LangData.lg.General.ThreadEnd + ": " + SQL.ToString());
                             }
                             if (ConfData.conf.GeoData.Enable)
@@ -73,6 +87,18 @@ namespace CsAsODS
             {
                 Console.WriteLine("按任意键退出...\nPress any key to exit....\n");
                 Console.ReadKey(true);
+            }
+
+            void SQLMethod()
+            {
+                switch (ConfData.conf.SQLData.SQLType)
+                {
+                    default: ((SQLRequest)SQL).SQLWatcher(); break;
+                    case "MySql": ((SQLRequest)SQL).SQLWatcher(); break;
+                    case "MariaDB": ((SQLRequest)SQL).SQLWatcher(); break;
+                    case "MongoDB": ((MongoSQL)SQL).SQLWatcher(); break;
+                    case "Json": ((JsonSQL)SQL).SQLWatcher(); break;
+                }
             }
         }
 

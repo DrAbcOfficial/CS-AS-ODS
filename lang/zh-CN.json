@@ -1,6 +1,6 @@
 {
     "General": {
-        "Exit": "按任意键退出...",
+        "Exit": "按任意键退出....",
         "EmptyInput": "输入的内容为空",
         "ReadingFile": "正在读取...",
         "ReadingFailed": "读取失败咯",
@@ -14,7 +14,7 @@
         "JsonReadFailed": "配置文件读取失败！",
         "Running": "成功！程序正在运行中！",
         "QuestFinish": "所有任务已完成！",
-		"ThreadEnd": "线程已终止"
+        "ThreadEnd": "线程已终止"
     },
     "GeoIP": {
         "Geoing": "GeoIP开始监听文件...",
