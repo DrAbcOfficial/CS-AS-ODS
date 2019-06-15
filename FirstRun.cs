@@ -23,8 +23,6 @@ namespace CsAsODS
                     FirstWriter(Program.FileDir + ConfData.conf.SQLData.SQLInput);
                 if (!File.Exists(Program.FileDir + ConfData.conf.SQLData.SQLOutput))
                     FirstWriter(Program.FileDir + ConfData.conf.SQLData.SQLOutput);
-                if (!File.Exists(Program.FileDir + ConfData.conf.SQLData.SQLFinish))
-                    FirstWriter(Program.FileDir + ConfData.conf.SQLData.SQLFinish);
             }
         }
 
