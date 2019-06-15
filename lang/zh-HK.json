@@ -1,0 +1,45 @@
+{
+    "General": {
+        "Exit": "按任意鍵退出...",
+        "EmptyInput": "輸入的內容為空",
+        "ReadingFile": "正在讀取...",
+        "ReadingFailed": "讀取失敗咯",
+        "ReadingStream": "正在讀取流...",
+        "WriteEmpty": "空白,不寫出",
+        "Writted": "寫入成功！",
+        "CreateWrite": "創建新文件...",
+        "WriteFailed": "寫出失敗咯",
+        "WriteAcupied": "被占用，不寫入",
+        "ReadingJson": "正在讀取配置文件",
+        "JsonReadFailed": "配置文件讀取失敗！",
+        "Running": "成功！程式正在執行中！",
+        "QuestFinish": "所有任務已完成！",
+		"ThreadEnd": "線程已終止"
+    },
+    "GeoIP": {
+        "Geoing": "GeoIP開始監聽文件...",
+        "Changed": "文件被改變,開始查找IP庫",
+        "EmptyIP": "空白ip,不獲取地址",
+        "NetError": "發生網路錯誤！",
+        "SendingAdd": "正在向伺服器發送地址",
+        "Error": "發生錯誤",
+        "IPAddSucc": "成功！獲取了地址！",
+        "EmptyRespond": "響應為空！"
+    },
+    "SQL": {
+        "Running": "正在執行SQL服務",
+        "Connected": "SQL伺服器鏈接成功！",
+        "ConError": "SQL伺服器鏈接失敗！請檢查伺服器或設置",
+        "ConNetError": "SQL伺服器網路鏈接失敗！請檢查伺服器或設置",
+        "RequstError": "SQL查詢失敗！",
+        "Changed": "SQL臨時文件已改變，開始發送訊息！",
+        "Empty": "查詢的數據為空！",
+        "FirstRun": "首次執行，開始進行初始化",
+        "Insert": "向SQL添加記錄",
+        "Inserted": "添加記錄成功！",
+        "Update": "向SQL更新記錄！",
+        "Updated": "更新記錄成功！",
+        "UpdateFailed": "更新記錄失敗！",
+        "Remain": "剩余 {0} 個記錄"
+    }
+}
