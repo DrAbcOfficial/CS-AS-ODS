@@ -1,0 +1,86 @@
+{
+    "General": {
+		//语言 zh-CN zh-HK en_US 
+        "Lang": "zh-CN",
+		//目前无用
+        "Hex": false,
+		//是否控制台输出IO信息（刷屏）
+        "LogIO": false
+    },
+    "GeoData": {
+		// 启动GeoIP
+        "Enable": true,
+		// GeoIP输入临时文件
+        "IPInput": "IPInput.txt",
+		// GeoIP输出临时文件
+        "IPOutput": "IPOutput.txt",
+		// 输出IP格式
+		// city 城市
+		// country 国家
+		// countryCode 国家代码
+		// isp 网络供应商isp
+		// lat 延迟
+		// lon lon
+		// query 查询IP
+		// region 地区代码
+		// regionName 地区名称
+		// status 查询状态
+		// timezone 时区
+		// zip zip
+        "IPBackFormat": [
+            "countryCode",
+            "country",
+            "regionName",
+            "city"
+        ]
+    },
+    "SQLData": {
+		// 启用SQL功能
+        "Enable": true,
+		//MySql MariaDB MongoDB Json
+        "SQLType": "MySql",
+		// SQL查询临时文件
+        "SQLInput": "SQLInput.txt",
+		// SQL输出临时文件
+        "SQLOutput": "SQLOutput.txt",
+		// SQL更新临时文件
+        "SQLChangeput": "SQLChangeput.txt",
+		// SQL完成临时文件
+        "SQLFinish": "SQLFinish",
+		//非本地数据(非Json)使用
+		"SQLNet": {
+			//链接超时时间
+            "TimeOut": 7,
+			// SQl服务器地址（不含http://）
+            "Server": "localhost",
+			// SQL服务器端口
+            "Port": "3306",
+			// SQL数据库
+			"Database": "Ecco",
+			// SQl表前缀
+            "Prefix": "SvenCoop",
+			// SQL账号
+            "Account": "root",
+			// SQL密码
+            "Password": "secret",
+			//MySQL MariaDB专用项
+			"MySQL": {
+				//保存安全信息
+                "Persist": false,
+				//使用Unicode
+				"Unicode": true,
+				//使用SSL? none required
+                "SSL": "none",
+				//编码
+				"Encode": "utf8",
+				// SQL表 INT VAR(24) VAR(24) INT
+                "Structure": [
+                    "UID",
+                    "SteamID",
+                    "NickName",
+                    "Ecco"
+                ]
+            }
+        }
+    }
+}
