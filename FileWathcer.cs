@@ -76,7 +76,7 @@ namespace CsAsODS
         {
             switch (ConfData.conf.SQLData.SQLType)
             {
-                default: ((SQLRequest)SQL).OnChanged(source,e); break;
+                default: ((SQLRequest)SQL).OnChanged(source, e); break;
                 case "MySql": ((SQLRequest)SQL).OnChanged(source, e); break;
                 case "MariaDB": ((SQLRequest)SQL).OnChanged(source, e); break;
                 case "MongoDB": ((MongoSQL)SQL).OnChanged(source, e); break;

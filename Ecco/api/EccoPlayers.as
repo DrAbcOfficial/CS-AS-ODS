@@ -1,5 +1,4 @@
 class EccoPlayerInventory{
-  dictionary BalanceData;
   int GetBalance(CBasePlayer@ pPlayer){
     string PlayerId = g_EngineFuncs.GetPlayerAuthId(pPlayer.edict());
     return int(BalanceData[PlayerId]);

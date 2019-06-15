@@ -39,7 +39,7 @@ namespace CsAsODS
                 try
                 {
                     FileStream fs = new FileStream(outPath, FileMode.Create);
-                    StreamWriter sw = new StreamWriter(fs,Encoding.UTF8);
+                    StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
                     //开始写入
                     sw.Write(outContent);
                     //清空缓存区

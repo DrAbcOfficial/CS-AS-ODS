@@ -55,7 +55,7 @@ namespace CsAsODS
         }
         public void OnUpdate(object source, FileSystemEventArgs e)
         {
-            string changePath = Program.FileDir + ConfData.conf.SQLData.SQLFinish;
+            string changePath = Program.FileDir + ConfData.conf.SQLData.SQLChangeput;
             CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
             string str = Reader.g_Reader.ReadIt(changePath);
             string[] line = str.Split('\n');
@@ -77,7 +77,7 @@ namespace CsAsODS
         void Update(in string ID, in string Ecco)
         {
             string str = String.Format("UPDATE `{0}_Ecco` SET `{4}` = '{2}' WHERE `{0}_Ecco`.`{3}` = '{1}'",
-                ConfData.conf.SQLData.SQLNet.Prefix, ID, Ecco, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
+                ConfData.conf.SQLData.SQLNet.Prefix, ID, Convert.ToInt32(Ecco), ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
             //更新SQL
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
             if (cmd.ExecuteNonQuery() > 0)

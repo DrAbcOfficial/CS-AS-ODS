@@ -5,13 +5,15 @@
 #include "core/BuyMenu"
 
 bool IsMapAllowed;
+CScheduledFunction@ pSchedu = null;
+dictionary BalanceData;
 
 void PluginInit(){
 	g_Module.ScriptInfo.SetAuthor("Paranoid_AF");
 	g_Module.ScriptInfo.SetContactInfo("Please Don't.");
 	g_Hooks.RegisterHook(Hooks::Player::ClientPutInServer, @onJoin);
-  g_Hooks.RegisterHook(Hooks::Player::ClientConnected, @ClientConnected);
-  g_Hooks.RegisterHook(Hooks::Game::MapChange, @MapChange);
+	g_Hooks.RegisterHook(Hooks::Player::ClientConnected, @ClientConnected);
+	g_Hooks.RegisterHook(Hooks::Game::MapChange, @MapChange);
   InitEcco();
 }
 
@@ -20,11 +22,8 @@ void MapInit(){
   Precache();
   EccoScoreBuffer::RegisterTimer();
   IsMapAllowed = true;
-  e_PlayerInventory.BalanceData.deleteAll();
   CSwepRegister::MapInit();//我得找个地方把东西放下
   CRTDResult::MapInit();//我得找个地方把东西放下
-
-  
   File@ file = g_FileSystem.OpenFile("scripts/plugins/Ecco/BannedMaps.txt", OpenFile::READ);
   if(file !is null && file.IsOpen()){
     while(!file.EOFReached()){
@@ -71,7 +70,8 @@ HookReturnCode onChat(SayParameters@ pParams){
 }
 
 HookReturnCode onJoin(CBasePlayer@ pPlayer){
-  SQLDic();
+string PlayerId = g_EngineFuncs.GetPlayerAuthId(pPlayer.edict());
+  SQLDic(PlayerId);
   if(IsMapAllowed){
     EccoInventoryLoader::LoadPlayerInventory(pPlayer);
     EccoScoreBuffer::ResetPlayerBuffer(pPlayer);
@@ -88,8 +88,9 @@ HookReturnCode ClientConnected(edict_t@ pEntity, const string& in szPlayerName, 
 
 HookReturnCode MapChange()
 {
-  e_PlayerInventory.WriteSQLData();
-  return HOOK_HANDLED;
+	e_PlayerInventory.WriteSQLData();
+	  BalanceData.deleteAll();
+	return HOOK_HANDLED;
 }
 
 void SQLQuery(string szID)
@@ -102,7 +103,7 @@ void SQLQuery(string szID)
     }
   }
 
-void SQLDic()
+void SQLDic( string szID )
 {
   File@ file = g_FileSystem.OpenFile("scripts/plugins/store/SQLOutput.txt", OpenFile::READ);
     if(file !is null && file.IsOpen())
@@ -111,10 +112,11 @@ void SQLDic()
       {
         string sLine;
         file.ReadLine(sLine);
-        if(sLine != "")
+		array<string> aryline = sLine.Split(",");
+        if(sLine != "" && aryline[1] == szID && !BalanceData.exists(szID))
         {
-          array<string> aryline = sLine.Split(",");
-          e_PlayerInventory.BalanceData[aryline[1]] = atoi(aryline[3]);
+          BalanceData[szID] = atoi(aryline[3]);
+		      break;
         }
       }
       file.Close();
