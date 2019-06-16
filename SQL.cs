@@ -4,19 +4,18 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-
+using System.Threading;
 
 namespace CsAsODS
 {
     class SQLRequest
     {
+        int iCount = 0;
+        int MaxCount = 10;
+        ManualResetEvent eventX = new ManualResetEvent(false);  //新建ManualResetEvent对象并且初始化为无信号状态
         MySqlConnection SQL_con = null;
         List<string[]> empty = new List<string[]>();
-        public void Start()
-        {
-            CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
-            SQL_con = new MySqlConnection(
-                    "server=" + ConfData.conf.SQLData.SQLNet.Server + ";" +
+        string szConnection = "server=" + ConfData.conf.SQLData.SQLNet.Server + ";" +
                     "port=" + ConfData.conf.SQLData.SQLNet.Port + ";" +
                     "database=" + ConfData.conf.SQLData.SQLNet.Database + ";" +
                     "user=" + ConfData.conf.SQLData.SQLNet.Account + ";" +
@@ -24,15 +23,20 @@ namespace CsAsODS
                     "Connect Timeout=" + ConfData.conf.SQLData.SQLNet.TimeOut + ";" +
                     "SslMode=" + ConfData.conf.SQLData.SQLNet.MySQL.SSL + ";" +
                     "persistsecurityinfo=" + ConfData.conf.SQLData.SQLNet.MySQL.Persist + ";" +
-                    "CHARSET=" + ConfData.conf.SQLData.SQLNet.MySQL.Encode);
+                    "CHARSET=" + ConfData.conf.SQLData.SQLNet.MySQL.Encode;
+        public bool Start()
+        {
+            SQL_con = new MySqlConnection(szConnection);
 
-            if (CCUtility.g_Utility.SQLOpen(SQL_con))
+            if (SQLOpen(SQL_con))
                 if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == ConfData.conf.SQLData.SQLNet.Prefix + "_Ecco"))
                 {
                     CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
                     SQLFirstRun();
                 }
             SQL_con.Close();
+            CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
+            return true;
         }
 
         void SQLFirstRun()
@@ -59,31 +63,39 @@ namespace CsAsODS
             CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
             string str = Reader.g_Reader.ReadIt(changePath);
             string[] line = str.Split('\n');
-            CCUtility.g_Utility.SQLOpen(SQL_con);
-            CCUtility.g_Utility.Succ(LangData.lg.SQL.Update);
+            CCUtility.g_Utility.Dialog(LangData.lg.SQL.Update);
             for (int i = 0; i < line.Length; i++)
             {
+                MaxCount = line.Length;
                 CCUtility.g_Utility.Taskbar(String.Format(LangData.lg.SQL.Remain, line.Length - i));
                 if (!string.IsNullOrEmpty(line[i]))
-                {
-                    string[] sz = line[i].Split(',');
-                    Update(sz[0], sz[1]);
-                }
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(UpdateThreadMethod), line[i]);
             }
+            eventX.WaitOne(Timeout.Infinite, true);
+            CCUtility.g_Utility.Succ(LangData.lg.SQL.Updated);
             CCUtility.g_Utility.Taskbar(LangData.lg.General.QuestFinish);
-            SQL_con.Close();
+        }
+
+        void UpdateThreadMethod(object Input)
+        {
+            Interlocked.Increment(ref iCount);
+            string[] sz = Input.ToString().Split(',');
+            Update(sz[0], sz[1]);
+            if (iCount == MaxCount - 1)
+                eventX.Set();
         }
 
         void Update(in string ID, in string Ecco)
         {
+            MySqlConnection ThreadPoolCon = new MySqlConnection(szConnection);
+            ThreadPoolSQLOpen(ThreadPoolCon);
             string str = String.Format("UPDATE `{0}_Ecco` SET `{4}` = '{2}' WHERE `{0}_Ecco`.`{3}` = '{1}'",
-                ConfData.conf.SQLData.SQLNet.Prefix, ID, Convert.ToInt32(Ecco), ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
+                ConfData.conf.SQLData.SQLNet.Prefix, ID, Ecco, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
             //更新SQL
-            MySqlCommand cmd = new MySqlCommand(str, SQL_con);
-            if (cmd.ExecuteNonQuery() > 0)
-                CCUtility.g_Utility.Succ(LangData.lg.SQL.Updated);
-            else
+            MySqlCommand cmd = new MySqlCommand(str, ThreadPoolCon);
+            if (cmd.ExecuteNonQuery() < 0)
                 CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed + ": " + ID + ":" + Ecco);
+            ThreadPoolCon.Close();
         }
 
         //改变时
@@ -99,7 +111,7 @@ namespace CsAsODS
             string inPath = Program.FileDir + ConfData.conf.SQLData.SQLInput;
             string outPath = Program.FileDir + ConfData.conf.SQLData.SQLOutput;
             string[] line = Reader.g_Reader.ReadIt(inPath).Split(',');
-            CCUtility.g_Utility.SQLOpen(SQL_con);
+            SQLOpen(SQL_con);
 
             bool IsExs = false;
             string[] outLine = Reader.g_Reader.ReadIt(outPath).Split('\n');
@@ -132,7 +144,7 @@ namespace CsAsODS
             SQL_con.Close();
             if (empty.Count != 0)
             {
-                CCUtility.g_Utility.SQLOpen(SQL_con);
+                SQLOpen(SQL_con);
                 string[][] ary = empty.ToArray();
                 for (int i = 0; i < ary.Length; i++)
                 {
@@ -193,6 +205,35 @@ namespace CsAsODS
                 reader.Close();
             }
             return null;
+        }
+
+        bool SQLOpen(MySqlConnection sql)
+        {
+            try
+            {
+                sql.Open();
+                CCUtility.g_Utility.Succ(LangData.lg.SQL.Connected);
+                return true;
+            }
+            catch (Exception e)
+            {
+                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
+            }
+            return false;
+        }
+
+        bool ThreadPoolSQLOpen(MySqlConnection sql)
+        {
+            try
+            {
+                sql.Open();
+                return true;
+            }
+            catch (Exception e)
+            {
+                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
+            }
+            return false;
         }
     }
 }

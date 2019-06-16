@@ -9,9 +9,8 @@ namespace CsAsODS
     {
         string JsonFile = Program.FileDir + "SqlJson/Ecco.json";
         Dictionary<string, JsonCollection> JsonData = new Dictionary<string, JsonCollection>();
-        public void Start()
+        public bool Start()
         {
-            CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
             if (!Directory.Exists(Program.FileDir + "SqlJson") || !File.Exists(JsonFile))
             {
                 CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
@@ -20,6 +19,8 @@ namespace CsAsODS
             }
             else
                 JsonData = JsonConvert.DeserializeObject<Dictionary<string, JsonCollection>>(Reader.g_Reader.ReadIt(JsonFile), new JsonSerializerSettings() { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii });
+            CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
+            return true;
         }
         public void OnChanged(object source, FileSystemEventArgs e)
         {
