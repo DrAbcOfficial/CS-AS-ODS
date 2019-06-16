@@ -13,9 +13,8 @@ namespace CsAsODS
         List<string[]> empty = new List<string[]>();
         IMongoCollection<BsonDocument> collection = null;
         IMongoDatabase database = null;
-        public void Start()
+        public bool Start()
         {
-            CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
             string MongoConnect = String.Format(
                 "mongodb://{0}:{1}@]{2}:{3}/{4}",
                 ConfData.conf.SQLData.SQLNet.Account, ConfData.conf.SQLData.SQLNet.Password, ConfData.conf.SQLData.SQLNet.Server, ConfData.conf.SQLData.SQLNet.Port, ConfData.conf.SQLData.SQLNet.Database);
@@ -50,11 +49,14 @@ namespace CsAsODS
                     CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
                     SQLFirstRun();
                 }
+                CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
+                return true;
 
             }
             catch (Exception e)
             {
                 CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
+                return false;
             }
         }
 

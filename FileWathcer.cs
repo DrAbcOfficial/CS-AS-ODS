@@ -28,6 +28,22 @@ namespace CsAsODS
 
         void Start()
         {
+            bool IsSQLStart = false;
+            switch (ConfData.conf.SQLData.SQLType)
+            {
+                default: IsSQLStart = ((SQLRequest)SQL).Start(); break;
+                case "MySql": IsSQLStart = ((SQLRequest)SQL).Start(); break;
+                case "MariaDB": IsSQLStart = ((SQLRequest)SQL).Start(); break;
+                case "MongoDB": IsSQLStart = ((MongoSQL)SQL).Start(); break;
+                case "Json": IsSQLStart = ((JsonSQL)SQL).Start(); break;
+            }
+            if (!IsSQLStart)
+            {
+                CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error);
+                return;
+            }
+                
+
             //监视文件
             fsw = new FileSystemWatcher
             {
@@ -61,15 +77,6 @@ namespace CsAsODS
             fswc.Changed += OnUpdate;
             // 开始监听
             fswc.EnableRaisingEvents = true;
-
-            switch (ConfData.conf.SQLData.SQLType)
-            {
-                default: ((SQLRequest)SQL).Start(); break;
-                case "MySql": ((SQLRequest)SQL).Start(); break;
-                case "MariaDB": ((SQLRequest)SQL).Start(); break;
-                case "MongoDB": ((MongoSQL)SQL).Start(); break;
-                case "Json": ((JsonSQL)SQL).Start(); break;
-            }
         }
 
         void OnChanged(object source, FileSystemEventArgs e)

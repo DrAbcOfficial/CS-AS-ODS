@@ -124,20 +124,5 @@ namespace CsAsODS
             CloseHandle(vHandle);
             return vHandle == HFILE_ERROR ? true : false;
         }
-        public bool SQLOpen(MySqlConnection sql)
-        {
-            try
-            {
-                sql.Open();
-                CCUtility.g_Utility.Succ(LangData.lg.SQL.Connected);
-                return true;
-            }
-            catch (Exception e)
-            {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
-            }
-            return false;
-        }
     }
-    //日志输出好看一点
 }
