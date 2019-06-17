@@ -1,7 +1,8 @@
-﻿using MySql.Data.MySqlClient;
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 namespace CsAsODS
 {
@@ -132,6 +133,24 @@ namespace CsAsODS
             Byte[] encodedBytes = utf8.GetBytes(unicodeString);
             String decodedString = utf8.GetString(encodedBytes);
             return decodedString;
+        }
+        public void AutoRetry(Action action)
+        {
+            var tries = ConfData.conf.General.Retry;
+            while (true)
+            {
+                try
+                {
+                    action();
+                    break; // success!
+                }
+                catch
+                {
+                    if (--tries == 0)
+                        throw;
+                    Thread.Sleep(ConfData.conf.General.RetryTime * 1000);
+                }
+            }
         }
     }
 }

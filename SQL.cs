@@ -24,8 +24,9 @@ namespace CsAsODS
         public bool Start()
         {
             SQL_con = new MySqlConnection(szConnection);
-            if (SQLOpen(SQL_con))
-                if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == ConfData.conf.SQLData.SQLNet.Prefix + "_ecco"))
+
+            CCUtility.g_Utility.AutoRetry(() => SQLOpen(SQL_con));//自动重试，防止质量"特别"好的SQL
+            if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == ConfData.conf.SQLData.SQLNet.Prefix + "_ecco"))
                 {
                     CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
                     SQLFirstRun();
@@ -218,19 +219,10 @@ namespace CsAsODS
             return null;
         }
 
-        bool SQLOpen(MySqlConnection sql)
+        void SQLOpen(MySqlConnection sql)
         {
-            try
-            {
                 sql.Open();
                 CCUtility.g_Utility.Succ(LangData.lg.SQL.Connected);
-                return true;
-            }
-            catch (Exception e)
-            {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
-            }
-            return false;
         }
 
         bool ThreadPoolSQLOpen(MySqlConnection sql)

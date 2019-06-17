@@ -14,6 +14,8 @@ namespace CsAsODS
         public string Lang { get; set; } = "zh-CN";
         public bool Hex { get; set; } = false;
         public bool LogIO { get; set; } = true;
+        public int Retry { get; set; } = 6;
+        public int RetryTime { get; set; } = 1;
     }
 
     public class GeoData
