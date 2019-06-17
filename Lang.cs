@@ -27,6 +27,7 @@ namespace CsAsODS
         public string Running { get; set; } = "成功！程序正在运行中！";
         public string QuestFinish { get; set; } = "所有任务已完成！";
         public string ThreadEnd { get; set; } = "线程已终止";
+        public string Retrying { get; set; } = "正在重试第 {0} 次...线程编号：{1}";
 
     }
     public class LangSQL

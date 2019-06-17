@@ -14,7 +14,8 @@
         "JsonReadFailed": "Configuration file reading failed!",
         "Running": "Success! The program is running!",
 		"QuestFinish": "All tasks have been completed!",
-		"ThreadEnd": "Thread Ended"
+		"ThreadEnd": "Thread Ended",
+		"Retrying": "Retry {0} times, thread number: {1}"
     },
     "GeoIP": {
         "Geoing": "GeoIP starts listening for files...",

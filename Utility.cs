@@ -148,6 +148,7 @@ namespace CsAsODS
                 {
                     if (--tries == 0)
                         throw;
+                    CCUtility.g_Utility.Warn(string.Format(LangData.lg.General.Retrying, ConfData.conf.General.Retry - tries, Thread.CurrentThread.ToString()));
                     Thread.Sleep(ConfData.conf.General.RetryTime * 1000);
                 }
             }
