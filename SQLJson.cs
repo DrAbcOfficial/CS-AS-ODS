@@ -132,8 +132,7 @@ namespace CsAsODS
         {
             try
             {
-
-                CCWriter.g_Writer.Writer(JsonFile, JsonConvert.SerializeObject(JsonData, new JsonSerializerSettings() { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii }));
+                CCWriter.g_Writer.Writer(JsonFile, JsonConvert.SerializeObject(JsonData));
                 CCUtility.g_Utility.Succ(LangData.lg.SQL.Updated);
             }
             catch (Exception e)

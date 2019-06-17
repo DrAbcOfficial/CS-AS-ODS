@@ -8,6 +8,9 @@ namespace EccoBuyMenu{
   
   
   void OpenBuyMenu(CBasePlayer@ pPlayer){
+	string PlayerId = g_EngineFuncs.GetPlayerAuthId(pPlayer.edict());
+	CPlayerData@ data = cast<CPlayerData@>(BalanceData[PlayerId]);
+	CateMenu.SetTitle(string(EccoConfig["BuyMenuName"]) + "\nYour UID:[" + data.UID  +"]\n");
     CateMenu.Open(0, 0, pPlayer);
   }
   

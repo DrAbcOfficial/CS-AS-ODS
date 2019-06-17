@@ -1,9 +1,5 @@
-class EccoPlayerInventory{
-  int GetBalance(CBasePlayer@ pPlayer){
-    string PlayerId = g_EngineFuncs.GetPlayerAuthId(pPlayer.edict());
-    return int(BalanceData[PlayerId]);
-  }
-
+class EccoPlayerInventory
+{
   array<string> GetInventory(CBasePlayer@ pPlayer){
     array<string> Inventory = {};
     File@ file = g_FileSystem.OpenFile("scripts/plugins/store/Ecco-" + GetUniquePlayerId(pPlayer) + ".txt", OpenFile::READ);
@@ -149,12 +145,46 @@ class EccoPlayerInventory{
       file.Close();
     }
   }
+
+  int GetBalance(CBasePlayer@ pPlayer)
+  {
+    string PlayerId = g_EngineFuncs.GetPlayerAuthId(pPlayer.edict());
+    if(BalanceData.exists(PlayerId))
+    {
+      CPlayerData@ data = cast<CPlayerData@>(BalanceData[PlayerId]);
+      if(data is null)
+      {
+        g_PlayerFuncs.SayText( pPlayer, "[ECCO SQL]你没有连上SQL服务器！请尝试重新连接游戏！\n" );
+        g_PlayerFuncs.SayText( pPlayer, "[ECCO SQL]You're not connected to the SQL server! Please try to reconnect!\n" );
+        return 0;
+      }
+        
+      else if(data.UID != "0")
+        return data.Ecco;
+      else
+      {
+            g_PlayerFuncs.SayText( pPlayer, "[ECCO SQL]你没有连上SQL服务器！请尝试重新连接游戏！\n" );
+            g_PlayerFuncs.SayText( pPlayer, "[ECCO SQL]You're not connected to the SQL server! Please try to reconnect!\n" );
+        return 0;
+      }
+    }
+    else
+    {
+            g_PlayerFuncs.SayText( pPlayer, "[ECCO SQL]你没有连上SQL服务器！请尝试重新连接游戏！\n" );
+            g_PlayerFuncs.SayText( pPlayer, "[ECCO SQL]You're not connected to the SQL server! Please try to reconnect!\n" );
+      return 0;
+    }
+  }
   
   int ChangeBalance(CBasePlayer@ pPlayer, int Amount){
+    string PlayerId = g_EngineFuncs.GetPlayerAuthId(pPlayer.edict());
+    if(!BalanceData.exists(PlayerId))
+      return 0;
     int Balance = GetBalance(pPlayer);
     Balance += Amount;
-    string PlayerId = g_EngineFuncs.GetPlayerAuthId(pPlayer.edict());
-    BalanceData[PlayerId] = int(BalanceData[PlayerId]) + Amount;
+    CPlayerData@ data = cast<CPlayerData@>(BalanceData[PlayerId]);
+    data.Ecco = data.Ecco + Amount;
+    BalanceData[PlayerId] = data;
     
     if(Amount > 0){
       ShowScoringHUD(pPlayer, Amount);
@@ -162,7 +192,6 @@ class EccoPlayerInventory{
     if(Amount < 0){
       ShowDeductHUD(pPlayer, -Amount);
     }
-    
     return Balance;
   }
 
@@ -175,11 +204,16 @@ class EccoPlayerInventory{
       string op = "";
       for(uint i = 0;i < balancekey.length();i++)
       {
-        op += balancekey[i] + "," + int(BalanceData[balancekey[i]]) + "\n";
+        CPlayerData@ data = cast<CPlayerData@>(BalanceData[balancekey[i]]);
+        if(data.UID != "0")
+          op += balancekey[i] + "," + data.Ecco + "\n";
       }
       file.Write(op);
       file.Close();
     }
+	@file = g_FileSystem.OpenFile("scripts/plugins/store/SQLFinish", OpenFile::WRITE);
+	file.Write("");
+	file.Close();
   }
 
   private void ShowDeductHUD(CBasePlayer@ pPlayer, int amount){

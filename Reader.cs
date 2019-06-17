@@ -13,9 +13,9 @@ namespace CsAsODS
             {
                 try
                 {
-                    StreamReader sr = new StreamReader(GeoFile, Encoding.UTF8);
+                    StreamReader sr = new StreamReader(GeoFile,Encoding.UTF8);
                     //开始读取
-                    String line = sr.ReadToEnd();
+                    string line = sr.ReadToEnd();
                     //关闭流
                     sr.Close();
                     CCUtility.g_Utility.FileIOLog(LangData.lg.General.ReadingFile + ":" + GeoFile + "...");
@@ -37,7 +37,7 @@ namespace CsAsODS
             {
                 StreamReader sr = new StreamReader(str, Encoding.UTF8);
                 //开始读取
-                String line = sr.ReadToEnd();
+                string line = sr.ReadToEnd();
                 //关闭流
                 sr.Close();
                 CCUtility.g_Utility.FileIOLog(LangData.lg.General.ReadingStream);
