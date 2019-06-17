@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace CsAsODS
 {
@@ -123,6 +124,14 @@ namespace CsAsODS
             IntPtr vHandle = _lopen(fileName, OF_READWRITE | OF_SHARE_DENY_NONE);
             CloseHandle(vHandle);
             return vHandle == HFILE_ERROR ? true : false;
+        }
+
+        public string get_uft8(string unicodeString)
+        {
+            UTF8Encoding utf8 = new UTF8Encoding();
+            Byte[] encodedBytes = utf8.GetBytes(unicodeString);
+            String decodedString = utf8.GetString(encodedBytes);
+            return decodedString;
         }
     }
 }

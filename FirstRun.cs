@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace CsAsODS
 {
@@ -33,6 +34,10 @@ namespace CsAsODS
             try
             {
                 FileStream fs = new FileStream(outPath, FileMode.Create);
+                StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
+                sw.Write("");
+                sw.Flush();
+                sw.Close();
                 fs.Close();
                 CCUtility.g_Utility.FileIOLog(LangData.lg.General.CreateWrite + ": " + outPath + "....");
             }
