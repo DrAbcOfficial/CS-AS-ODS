@@ -126,7 +126,7 @@ namespace CsAsODS
                 string str = "";
                 WebRequest wRequest = WebRequest.Create(url);
                 wRequest.Method = "GET";
-                wRequest.ContentType = "text/html;charset=UTF-8";
+                wRequest.ContentType = "text/html;charset=" + ConfData.conf.SQLData.SQLNet.MySQL.Encode;
                 wRequest.Timeout = 50000; //设置超时时间
                 WebResponse wResponse = null;
                 try

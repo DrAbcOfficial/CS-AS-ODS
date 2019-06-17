@@ -1,18 +1,20 @@
 {
+	//主要设置
     "General": {
-		//语言 zh-CN zh-HK en_US 
+		//语言 zh-CN zh-HK en_US 默认zh-CN
         "Lang": "zh-CN",
-		//目前无用
+		//启用十六位传输 目前无用
         "Hex": false,
-		//是否控制台输出IO信息（刷屏）
+		//是否控制台输出IO信息（刷屏）默认true
         "LogIO": false
     },
+	//GeoIP设置
     "GeoData": {
-		// 启动GeoIP
+		// 启动GeoIP 默认true
         "Enable": true,
-		// GeoIP输入临时文件
+		// GeoIP输入临时文件 默认IPInput.txt
         "IPInput": "IPInput.txt",
-		// GeoIP输出临时文件
+		// GeoIP输出临时文件 默认IPOutput.txt
         "IPOutput": "IPOutput.txt",
 		// 输出IP格式
 		// city 城市
@@ -27,6 +29,7 @@
 		// status 查询状态
 		// timezone 时区
 		// zip zip
+		// 默认 countryCode country regionName city
         "IPBackFormat": [
             "countryCode",
             "country",
@@ -34,22 +37,23 @@
             "city"
         ]
     },
+	//SQL设置
     "SQLData": {
-		// 启用SQL功能
-        "Enable": true,
-		//MySql MariaDB MongoDB Json
+		// 启用SQL功能 默认为false
+        "Enable": false,
+		//MySql MariaDB MongoDB Json | Json为本地储存
         "SQLType": "MySql",
-		// SQL查询临时文件
+		// SQL查询临时文件 默认SQLInput.txt
         "SQLInput": "SQLInput.txt",
-		// SQL输出临时文件
+		// SQL输出临时文件 默认SQLOutput.txt
         "SQLOutput": "SQLOutput.txt",
-		// SQL更新临时文件
+		// SQL更新临时文件 默认SQLChangeput.txt
         "SQLChangeput": "SQLChangeput.txt",
-		// SQL完成临时文件
+		// SQL完成临时文件 默认SQLFinish
         "SQLFinish": "SQLFinish",
 		//非本地数据(非Json)使用
 		"SQLNet": {
-			//链接超时时间
+			//链接超时时间 默认7
             "TimeOut": 7,
 			// SQl服务器地址（不含http://）
             "Server": "localhost",
@@ -57,7 +61,7 @@
             "Port": "3306",
 			// SQL数据库
 			"Database": "Ecco",
-			// SQl表前缀
+			// SQl表前缀 默认SvenCoop
             "Prefix": "SvenCoop",
 			// SQL账号
             "Account": "root",
@@ -65,15 +69,16 @@
             "Password": "secret",
 			//MySQL MariaDB专用项
 			"MySQL": {
-				//保存安全信息
+				//保存安全信息 默认false
                 "Persist": false,
-				//使用Unicode
+				//使用Unicode 无用
 				"Unicode": true,
-				//使用SSL? none required
+				//使用SSL none required 默认none
                 "SSL": "none",
-				//编码
-				"Encode": "utf8",
+				//编码 默认utf-8
+				"Encode": "utf-8",
 				// SQL表 INT VAR(24) VAR(24) INT
+				// 默认UID SteamID NickName Ecco
                 "Structure": [
                     "UID",
                     "SteamID",

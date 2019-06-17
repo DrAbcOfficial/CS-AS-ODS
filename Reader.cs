@@ -13,7 +13,7 @@ namespace CsAsODS
             {
                 try
                 {
-                    StreamReader sr = new StreamReader(GeoFile,Encoding.UTF8);
+                    StreamReader sr = new StreamReader(GeoFile,Encoding.GetEncoding(ConfData.conf.SQLData.SQLNet.MySQL.Encode));
                     //开始读取
                     string line = sr.ReadToEnd();
                     //关闭流
@@ -35,7 +35,7 @@ namespace CsAsODS
         {
             try
             {
-                StreamReader sr = new StreamReader(str, Encoding.UTF8);
+                StreamReader sr = new StreamReader(str, Encoding.GetEncoding(ConfData.conf.SQLData.SQLNet.MySQL.Encode));
                 //开始读取
                 string line = sr.ReadToEnd();
                 //关闭流
@@ -54,7 +54,7 @@ namespace CsAsODS
         {
             try
             {
-                StreamReader sr = new StreamReader(json, Encoding.UTF8);
+                StreamReader sr = new StreamReader(json, Encoding.GetEncoding(ConfData.conf.SQLData.SQLNet.MySQL.Encode));
                 //开始读取
                 string line = sr.ReadToEnd();
                 //关闭流
