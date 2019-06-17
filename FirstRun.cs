@@ -34,7 +34,7 @@ namespace CsAsODS
             try
             {
                 FileStream fs = new FileStream(outPath, FileMode.Create);
-                StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
+                StreamWriter sw = new StreamWriter(fs, Encoding.GetEncoding(ConfData.conf.SQLData.SQLNet.MySQL.Encode));
                 sw.Write("");
                 sw.Flush();
                 sw.Close();
