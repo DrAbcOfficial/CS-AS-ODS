@@ -37,8 +37,18 @@ namespace CsAsODS
 
         void SQLFirstRun()
         {
-            string createStatement = String.Format("CREATE TABLE `{0}`.`{1}_ecco` ( `{2}` INT NOT NULL AUTO_INCREMENT , `{3}` VARCHAR(36) CHARACTER SET {6} COLLATE {6}_bin NOT NULL , `{4}` VARCHAR(36) CHARACTER SET {6} COLLATE {6}_bin NOT NULL , `{5}` INT NOT NULL , PRIMARY KEY (`{2}`, `{3}`)) ENGINE = InnoDB CHARSET={6} COLLATE {6}_bin CHARSET={6};",
-                ConfData.conf.SQLData.SQLNet.Database, ConfData.conf.SQLData.SQLNet.Prefix, ConfData.conf.SQLData.SQLNet.MySQL.Structure[0], ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[2], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3], ConfData.conf.SQLData.SQLNet.MySQL.Encode);
+            string createStatement = String.Format(
+                "CREATE TABLE `{0}`.`{1}_ecco` ( `{2}` INT NOT NULL AUTO_INCREMENT , " +
+                "`{3}` VARCHAR(36) CHARACTER SET {6} COLLATE {6}_bin NOT NULL , " +
+                "`{4}` VARCHAR(36) CHARACTER SET {6} COLLATE {6}_bin NOT NULL , " +
+                "`{5}` INT NOT NULL , PRIMARY KEY (`{2}`, `{3}`)) ENGINE = InnoDB CHARSET={6} COLLATE {6}_bin CHARSET={6};",
+                ConfData.conf.SQLData.SQLNet.Database, 
+                ConfData.conf.SQLData.SQLNet.Prefix, 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[0], 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2], 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3], 
+                ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-", "").Replace("_", ""));
             // 建表
             try
             {
