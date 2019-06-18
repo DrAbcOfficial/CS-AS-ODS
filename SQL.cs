@@ -20,17 +20,17 @@ namespace CsAsODS
                     "Connect Timeout=" + ConfData.conf.SQLData.SQLNet.TimeOut + ";" +
                     "SslMode=" + ConfData.conf.SQLData.SQLNet.MySQL.SSL + ";" +
                     "persistsecurityinfo=" + ConfData.conf.SQLData.SQLNet.MySQL.Persist + ";" +
-                    "charset=" + ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-","").Replace("_","");
+                    "charset=" + ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-", "").Replace("_", "");
         public bool Start()
         {
             SQL_con = new MySqlConnection(szConnection);
 
             CCUtility.g_Utility.AutoRetry(() => SQLOpen(SQL_con));//自动重试，防止质量"特别"好的SQL
             if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == ConfData.conf.SQLData.SQLNet.Prefix + "_ecco"))
-                {
-                    CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
-                    SQLFirstRun();
-                }
+            {
+                CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
+                SQLFirstRun();
+            }
             SQL_con.Close();
             CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
             return true;
@@ -43,12 +43,12 @@ namespace CsAsODS
                 "`{3}` VARCHAR(36) CHARACTER SET {6} COLLATE {6}_bin NOT NULL , " +
                 "`{4}` VARCHAR(36) CHARACTER SET {6} COLLATE {6}_bin NOT NULL , " +
                 "`{5}` INT NOT NULL , PRIMARY KEY (`{2}`, `{3}`)) ENGINE = InnoDB CHARSET={6} COLLATE {6}_bin CHARSET={6};",
-                ConfData.conf.SQLData.SQLNet.Database, 
-                ConfData.conf.SQLData.SQLNet.Prefix, 
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[0], 
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], 
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2], 
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3], 
+                ConfData.conf.SQLData.SQLNet.Database,
+                ConfData.conf.SQLData.SQLNet.Prefix,
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[0],
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2],
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3],
                 ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-", "").Replace("_", ""));
             // 建表
             try
@@ -87,7 +87,6 @@ namespace CsAsODS
                 {
                     string[] sz = line[i].ToString().Split(',');
                     t3 = Task.Factory.StartNew(() => Update(sz[0], sz[1]));
-                    Update(sz[0], sz[1]);
                 }
             }
             Task.WaitAll(t3);
@@ -97,23 +96,15 @@ namespace CsAsODS
 
         void Update(in string ID, in string Ecco)
         {
-            try
-            {
-                MySqlConnection ThreadPoolCon = new MySqlConnection(szConnection);
-                ThreadPoolSQLOpen(ThreadPoolCon);
-                string str = String.Format("UPDATE `{0}_ecco` SET `{4}` = '{2}' WHERE `{0}_ecco`.`{3}` = '{1}'",
-                    ConfData.conf.SQLData.SQLNet.Prefix, ID, Ecco, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
-                //更新SQL
-                MySqlCommand cmd = new MySqlCommand(str, ThreadPoolCon);
-                if (cmd.ExecuteNonQuery() < 0)
-                    CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed + ": " + ID + ":" + Ecco);
-                ThreadPoolCon.Close();
-            }
-            catch(Exception e)
-            {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
-            }
-
+            MySqlConnection ThreadPoolCon = new MySqlConnection(szConnection);
+            ThreadPoolCon.Open();
+            string str = String.Format("UPDATE `{0}_ecco` SET `{4}` = '{2}' WHERE `{0}_ecco`.`{3}` = '{1}'",
+                ConfData.conf.SQLData.SQLNet.Prefix, ID, Ecco, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
+            //更新SQL
+            MySqlCommand cmd = new MySqlCommand(str, ThreadPoolCon);
+            if (cmd.ExecuteNonQuery() < 0)
+                CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed + ": " + ID + ":" + Ecco);
+            ThreadPoolCon.Close();
         }
         //查询请求
         void Search()
@@ -221,22 +212,8 @@ namespace CsAsODS
 
         void SQLOpen(MySqlConnection sql)
         {
-                sql.Open();
-                CCUtility.g_Utility.Succ(LangData.lg.SQL.Connected);
-        }
-
-        bool ThreadPoolSQLOpen(MySqlConnection sql)
-        {
-            try
-            {
-                sql.Open();
-                return true;
-            }
-            catch (Exception e)
-            {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
-            }
-            return false;
+            sql.Open();
+            CCUtility.g_Utility.Succ(LangData.lg.SQL.Connected);
         }
     }
 }

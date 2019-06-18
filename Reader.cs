@@ -13,7 +13,7 @@ namespace CsAsODS
             {
                 try
                 {
-                    StreamReader sr = new StreamReader(GeoFile,Encoding.GetEncoding(ConfData.conf.SQLData.SQLNet.MySQL.Encode));
+                    StreamReader sr = new StreamReader(GeoFile, Encoding.GetEncoding(ConfData.conf.SQLData.SQLNet.MySQL.Encode));
                     //开始读取
                     string line = sr.ReadToEnd();
                     //关闭流

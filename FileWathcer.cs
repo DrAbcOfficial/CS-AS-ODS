@@ -42,7 +42,7 @@ namespace CsAsODS
                 CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error);
                 return;
             }
-                
+
 
             //监视文件
             fsw = new FileSystemWatcher
