@@ -14,8 +14,8 @@
         "JsonReadFailed": "配置文件讀取失敗！",
         "Running": "成功！程式正在執行中！",
         "QuestFinish": "所有任務已完成！",
-		"ThreadEnd": "線程已終止",
-		"Retrying": "正在重試第{0}次…線程編號：{1}"
+        "ThreadEnd": "線程已終止",
+        "Retrying": "正在重試第{0}次…線程編號：{1}"
     },
     "GeoIP": {
         "Geoing": "GeoIP開始監聽文件...",

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -144,11 +143,11 @@ namespace CsAsODS
                     action();
                     break; // success!
                 }
-                catch
+                catch(Exception e)
                 {
+                    CCUtility.g_Utility.Warn(string.Format(LangData.lg.General.Retrying, ConfData.conf.General.Retry - tries + 1, Thread.CurrentThread));
                     if (--tries == 0)
-                        throw;
-                    CCUtility.g_Utility.Warn(string.Format(LangData.lg.General.Retrying, ConfData.conf.General.Retry - tries, Thread.CurrentThread.ToString()));
+                        CCUtility.g_Utility.CritError(LangData.lg.SQL.ConError + ": " + e.ToString());
                     Thread.Sleep(ConfData.conf.General.RetryTime * 1000);
                 }
             }

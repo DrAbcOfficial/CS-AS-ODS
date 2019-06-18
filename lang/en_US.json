@@ -13,9 +13,9 @@
         "ReadingJson": "Reading configuration file",
         "JsonReadFailed": "Configuration file reading failed!",
         "Running": "Success! The program is running!",
-		"QuestFinish": "All tasks have been completed!",
-		"ThreadEnd": "Thread Ended",
-		"Retrying": "Retry {0} times, thread number: {1}"
+        "QuestFinish": "All tasks have been completed!",
+        "ThreadEnd": "Thread Ended",
+        "Retrying": "Retry {0} times, thread number: {1}"
     },
     "GeoIP": {
         "Geoing": "GeoIP starts listening for files...",
@@ -29,18 +29,18 @@
     },
     "SQL": {
         "Running": "Running SQL Service",
-		"Connected": "SQL Server Connect Successful!",
+        "Connected": "SQL Server Connect Successful!",
         "ConError": "SQL Server Connect Failed! Check the server or settings",
         "ConNetError": "SQL Server Network Connect Failed! Check the server or settings",
         "RequstError": "SQL query failed!",
         "Changed": "SQL temporary file has changed, sending information!",
-		"Empty": "The query is empty!",
-		"FirstRun": "First run, start SQL initialization!",
-		"Insert": "Add records to SQL",
-		"Inserted": "Successful insert records!",
-		"Update": "Update records to SQL",
-		"Updated": "Successful update of records",
-		"UpdateFailed": "Failed to update the record!",
-		"Remain": "Remaining {0} records"
+        "Empty": "The query is empty!",
+        "FirstRun": "First run, start SQL initialization!",
+        "Insert": "Add records to SQL",
+        "Inserted": "Successful insert records!",
+        "Update": "Update records to SQL",
+        "Updated": "Successful update of records",
+        "UpdateFailed": "Failed to update the record!",
+        "Remain": "Remaining {0} records"
     }
 }
