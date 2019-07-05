@@ -20,7 +20,7 @@ namespace CsAsODS
                     sr.Close();
                     CCUtility.g_Utility.FileIOLog(LangData.lg.General.ReadingFile + ":" + GeoFile + "...");
                     //去分隔符
-                    return line;
+                    return @line;
                 }
                 catch (Exception e)
                 {
@@ -42,7 +42,7 @@ namespace CsAsODS
                 sr.Close();
                 CCUtility.g_Utility.FileIOLog(LangData.lg.General.ReadingStream);
                 //去分隔符
-                return line;
+                return @line;
             }
             catch (Exception e)
             {
@@ -61,7 +61,7 @@ namespace CsAsODS
                 sr.Close();
                 CCUtility.g_Utility.Dialog(LangData.lg.General.ReadingJson);
                 //去分隔符
-                return line;
+                return @line;
             }
             catch (Exception e)
             {

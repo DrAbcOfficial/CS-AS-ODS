@@ -102,9 +102,9 @@ namespace CsAsODS
                 if (JsonData.ContainsKey(szID))
                 {
                     JsonCollection data = JsonData[szID];
-                    data.Nick = szNick;
+                    data.Nick = @szNick;
                     JsonData[szID] = data;
-                    szReturn = data.ID + "," + data.SteamID + "," + szNick + "," + data.Ecco;
+                    szReturn = data.ID + "," + data.SteamID + "," + @szNick + "," + data.Ecco;
                 }
                 else
                 {
@@ -112,7 +112,7 @@ namespace CsAsODS
                     {
                         ID = JsonData.Count + 1,
                         SteamID = szID,
-                        Nick = szNick,
+                        Nick = @szNick,
                         Ecco = 0
                     };
                     JsonData[szID] = data;

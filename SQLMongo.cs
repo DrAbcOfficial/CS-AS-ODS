@@ -154,7 +154,7 @@ namespace CsAsODS
                 string[][] ary = empty.ToArray();
                 for (int i = 0; i < ary.Length; i++)
                 {
-                    Insert(ary[i][0], ary[i][1], 0);
+                    Insert(ary[i][0], @ary[i][1], 0);
                 }
                 empty.Clear();
             }
@@ -167,7 +167,7 @@ namespace CsAsODS
             var document = new BsonDocument
                 {
                     {"SteamID",szID},
-                    {"Nick",szNick},
+                    {"Nick",@szNick},
                     {"Ecco",szEcco}
                 };
             try
@@ -198,7 +198,7 @@ namespace CsAsODS
                 if (string.IsNullOrEmpty(mc.Nick) || (string.IsNullOrEmpty(mc.SteamID))) //不存在则加入列表
                 {
                     CCUtility.g_Utility.Warn(LangData.lg.SQL.Empty);
-                    string[] a = { szID, szNick };
+                    string[] a = { szID, @szNick };
                     empty.Add(a);
                 }
                 else

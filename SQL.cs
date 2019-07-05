@@ -149,7 +149,7 @@ namespace CsAsODS
                 string[][] ary = empty.ToArray();
                 for (int i = 0; i < ary.Length; i++)
                 {
-                    Insert(ary[i][0], ary[i][1], 0);
+                    Insert(ary[i][0], @ary[i][1], 0);
                 }
                 SQL_con.Close();
                 empty.Clear();
@@ -158,10 +158,10 @@ namespace CsAsODS
 
         void Insert(string szID, string szNick, int szEcco)
         {
-            string UniNick = CCUtility.g_Utility.get_uft8(szNick);
+            string UniNick = CCUtility.g_Utility.get_uft8(@szNick);
             CCUtility.g_Utility.Warn(LangData.lg.SQL.Insert + ": [" + szID + "]");
             string str = String.Format("INSERT INTO `{0}_ecco` (`{4}`, `{5}`, `{6}`) VALUES ('{1}', '{2}', '{3}')",
-                ConfData.conf.SQLData.SQLNet.Prefix, szID, UniNick, szEcco, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[2], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
+                ConfData.conf.SQLData.SQLNet.Prefix, szID, @UniNick, szEcco, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[2], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
             //更新SQL
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
             if (cmd.ExecuteNonQuery() > 0)
@@ -172,9 +172,9 @@ namespace CsAsODS
 
         string Request(string szID, string szNick)
         {
-            string UniNick = CCUtility.g_Utility.get_uft8(szNick);
+            string UniNick = CCUtility.g_Utility.get_uft8(@szNick);
             string str = String.Format("UPDATE `{0}_ecco` SET `{4}` = '{2}' WHERE `{0}_ecco`.`{3}` = '{1}'; select * from {0}_ecco where {3}= '{1}'",
-                ConfData.conf.SQLData.SQLNet.Prefix, szID, UniNick, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[2]);
+                ConfData.conf.SQLData.SQLNet.Prefix, szID, @UniNick, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[2]);
             //设置查询命令
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
             MySqlDataReader reader = null;
@@ -187,7 +187,7 @@ namespace CsAsODS
                 if (!reader.HasRows)//不存在则加入列表
                 {
                     CCUtility.g_Utility.Warn(LangData.lg.SQL.Empty);
-                    string[] a = { szID, UniNick };
+                    string[] a = { szID, @UniNick };
                     empty.Add(a);
                 }
                 else
