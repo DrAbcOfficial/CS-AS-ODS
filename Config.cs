@@ -3,12 +3,6 @@ using System;
 
 namespace CsAsODS
 {
-    public class Config
-    {
-        public General General { get; set; } = new General();
-        public GeoData GeoData { get; set; } = new GeoData();
-        public SQLData SQLData { get; set; } = new SQLData();
-    }
     public class General
     {
         public string Lang { get; set; } = "zh-CN";
@@ -23,6 +17,7 @@ namespace CsAsODS
         public bool Enable { get; set; } = true;
         public string IPInput { get; set; } = "IPInput.txt";
         public string IPOutput { get; set; } = "IPOutput.txt";
+        public string IPDoneput { get; set; } = "IPDoneput";
         public string[] IPBackFormat { get; set; } = {
             "countryCode",
             "country",
@@ -30,31 +25,13 @@ namespace CsAsODS
             "city"
         };
     }
-    public class SQLData
+    public class SQLJsonConfig
     {
-        public bool Enable { get; set; } = false;
-        public string SQLType { get; set; } = "MySql";
-        //MySql MariaDB MongoDB Json | Fuck H2
-        public SQLServerConfig SQLNet = new SQLServerConfig();
-        public string SQLInput { get; set; } = "SQLInput.txt";
-        public string SQLOutput { get; set; } = "SQLOutput.txt";
-        public string SQLChangeput { get; set; } = "SQLChangeput.txt";
-        public string SQLFinish { get; set; } = "SQLFinish";
-    }
-    public class SQLServerConfig
-    {
-        public int TimeOut { get; set; } = 7;
-        public string Server { get; set; } = "localhost";
-        public string Port { get; set; } = "3306";
-        public string Prefix { get; set; } = "SvenCoop";
-        public string Database { get; set; } = "Ecco";
-        public string Account { get; set; } = "root";
-        public string Password { get; set; } = "secret";
-
-        public MySQLConfig MySQL = new MySQLConfig();
+        public string FileName { get; set; } = "ODS";
     }
     public class MySQLConfig
     {
+        public bool OldGUID { get; set; } = true;
         public bool Persist { get; set; } = true;
         public bool Unicode { get; set; } = true;
         public string SSL { get; set; } = "none";
@@ -62,11 +39,42 @@ namespace CsAsODS
         public string[] Structure { get; set; } = {
             "UID",
             "SteamID",
-            "NickName",
-            "Ecco"
+            "UserName",
+            "Ecco",
+            "Addition"
         };
     }
+    public class SQLServerConfig
+    {
+        public int TimeOut { get; set; } = 7;
+        public string Server { get; set; } = "localhost";
+        public string Port { get; set; } = "3306";
+        public string Prefix { get; set; } = "SvenCoop";
+        public string Suffix { get; set; } = "ecco";
+        public string Database { get; set; } = "Ecco";
+        public string Account { get; set; } = "root";
+        public string Password { get; set; } = "secret";
 
+        public MySQLConfig MySQL = new MySQLConfig();
+    }
+    public class SQLData
+    {
+        public bool Enable { get; set; } = false;
+        public string SQLType { get; set; } = "MySql";
+        //MySql MariaDB MongoDB Json | Fuck H2
+        public SQLServerConfig SQLNet = new SQLServerConfig();
+        public SQLJsonConfig SQLJson = new SQLJsonConfig();
+        public string SQLInput { get; set; } = "SQLInput.txt";
+        public string SQLOutput { get; set; } = "SQLOutput.txt";
+        public string SQLChangeput { get; set; } = "SQLChangeput.txt";
+        public string SQLFinish { get; set; } = "SQLFinish";
+    }
+    public class Config
+    {
+        public General General { get; set; } = new General();
+        public GeoData GeoData { get; set; } = new GeoData();
+        public SQLData SQLData { get; set; } = new SQLData();
+    }
     public class ConfData
     {
         public static Config conf = new Config();

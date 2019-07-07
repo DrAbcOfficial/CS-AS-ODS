@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.IO;
 using System.Text;
 using System.Threading;
 
@@ -7,17 +7,6 @@ namespace CsAsODS
 {
     public class CCUtility
     {
-        //引用DLL
-        [DllImport("kernel32.dll")]
-        static extern IntPtr _lopen(string lpPathName, int iReadWrite);
-
-        [DllImport("kernel32.dll")]
-        static extern bool CloseHandle(IntPtr hObject);
-
-        const int OF_READWRITE = 2;
-        const int OF_SHARE_DENY_NONE = 0x40;
-        static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
-
         //实例化
         public static CCUtility g_Utility = new CCUtility();
 
@@ -121,17 +110,40 @@ namespace CsAsODS
         //占用判断防止报错
         public bool IsFileInUse(in string fileName)
         {
-            IntPtr vHandle = _lopen(fileName, OF_READWRITE | OF_SHARE_DENY_NONE);
-            CloseHandle(vHandle);
-            return vHandle == HFILE_ERROR ? true : false;
+            bool inUse = true;
+            if (File.Exists(fileName))
+            {
+                FileStream fs = null;
+                try
+                {
+                    fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
+                    inUse = false;
+                }
+                catch (Exception e)
+                {
+                    g_Utility.Warn(LangData.lg.General.ReadingFailed + ":" + e.Message.ToString());
+                }
+                finally
+                {
+                    if (fs != null)
+                        fs.Close();
+                }
+                return inUse;
+            }
+            else
+                return false;
         }
 
-        public string get_uft8(string unicodeString)
+        public string get_uft8(in string unicodeString)
         {
             UTF8Encoding utf8 = new UTF8Encoding();
             Byte[] encodedBytes = utf8.GetBytes(unicodeString);
             String decodedString = utf8.GetString(encodedBytes);
             return decodedString;
+        }
+        public string FormatNick(in string shitName)
+        {
+            return shitName.Replace("\"", "").Replace("\'", "").Replace(@"\", "/");
         }
         public void AutoRetry(Action action)
         {
@@ -143,7 +155,7 @@ namespace CsAsODS
                     action();
                     break; // success!
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     CCUtility.g_Utility.Warn(string.Format(LangData.lg.General.Retrying, ConfData.conf.General.Retry - tries + 1, Thread.CurrentThread));
                     if (--tries == 0)

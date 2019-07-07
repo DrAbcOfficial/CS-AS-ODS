@@ -25,7 +25,7 @@ namespace CsAsODS
                 //获取或设置要监视的更改类型
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size,
                 //要监视的文件
-                Filter = ConfData.conf.GeoData.IPInput,
+                Filter = ConfData.conf.GeoData.IPDoneput,
                 //设置是否级联监视指定路径中的子目录
                 IncludeSubdirectories = false
             };
@@ -38,8 +38,14 @@ namespace CsAsODS
             void OnChanged(object source, FileSystemEventArgs e)
             {
                 CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.GeoIP.Changed);
-                try { Write(GeoIt(Reader.g_Reader.ReadIt(e.FullPath).Split(',')[1].Split(':')[0]), Reader.g_Reader.ReadIt(e.FullPath).Split(',')[0]); }
-                catch (Exception ex) { CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error + ": " + ex.Message.ToString()); }
+                try
+                {
+                    Write(GeoIt(Reader.g_Reader.ReadIt(ConfData.conf.GeoData.IPInput).Split(',')[1].Split(':')[0]), Reader.g_Reader.ReadIt(ConfData.conf.GeoData.IPInput).Split(',')[0]);
+                }
+                catch (Exception ex)
+                {
+                    CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error + ": " + ex.Message.ToString());
+                }
             }
             //写
             void Write(in string output, in string ID)

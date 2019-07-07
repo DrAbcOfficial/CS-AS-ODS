@@ -14,6 +14,8 @@ namespace CsAsODS
                     FirstWriter(Program.FileDir + ConfData.conf.GeoData.IPInput);
                 if (!File.Exists(Program.FileDir + ConfData.conf.GeoData.IPOutput))
                     FirstWriter(Program.FileDir + ConfData.conf.GeoData.IPOutput);
+                if (!File.Exists(Program.FileDir + ConfData.conf.GeoData.IPDoneput))
+                    FirstWriter(Program.FileDir + ConfData.conf.GeoData.IPDoneput);
             }
 
             if (ConfData.conf.SQLData.Enable)

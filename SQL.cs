@@ -20,13 +20,14 @@ namespace CsAsODS
                     "Connect Timeout=" + ConfData.conf.SQLData.SQLNet.TimeOut + ";" +
                     "SslMode=" + ConfData.conf.SQLData.SQLNet.MySQL.SSL + ";" +
                     "persistsecurityinfo=" + ConfData.conf.SQLData.SQLNet.MySQL.Persist + ";" +
-                    "charset=" + ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-", "").Replace("_", "");
+                    "charset=" + ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-", "").Replace("_", "") + ";" +
+                    "Old Guids=" + ConfData.conf.SQLData.SQLNet.MySQL.OldGUID;
         public bool Start()
         {
             SQL_con = new MySqlConnection(szConnection);
 
             CCUtility.g_Utility.AutoRetry(() => SQLOpen(SQL_con));//自动重试，防止质量"特别"好的SQL
-            if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == ConfData.conf.SQLData.SQLNet.Prefix + "_ecco"))
+            if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == ConfData.conf.SQLData.SQLNet.Prefix + "_" + ConfData.conf.SQLData.SQLNet.Suffix))
             {
                 CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
                 SQLFirstRun();
@@ -38,17 +39,22 @@ namespace CsAsODS
 
         void SQLFirstRun()
         {
-            string createStatement = String.Format(
-                "CREATE TABLE `{0}`.`{1}_ecco` ( `{2}` INT NOT NULL AUTO_INCREMENT , " +
-                "`{3}` VARCHAR(36) CHARACTER SET {6} COLLATE {6}_bin NOT NULL , " +
-                "`{4}` VARCHAR(36) CHARACTER SET {6} COLLATE {6}_bin NOT NULL , " +
-                "`{5}` INT NOT NULL , PRIMARY KEY (`{2}`, `{3}`)) ENGINE = InnoDB CHARSET={6} COLLATE {6}_bin CHARSET={6};",
+            string createStatement = string.Format(
+               "CREATE TABLE `{0}`.`{1}_{2}` ( " +
+               "`{3}` INT UNSIGNED NOT NULL AUTO_INCREMENT , " +
+               "`{4}` CHAR(32) CHARACTER SET {8} COLLATE {8}_bin NOT NULL , " +
+               "`{5}` CHAR(36) CHARACTER SET {8} COLLATE {8}_bin NOT NULL , " +
+               "`{6}` INT NOT NULL , " +
+               "`{7}` CHAR(36) CHARACTER SET {8} COLLATE {8}_bin NULL DEFAULT NULL , " +
+               "PRIMARY KEY (`{3}`, `{4}`)) ENGINE = InnoDB CHARSET={8} COLLATE {8}_bin CHARSET={8};",
                 ConfData.conf.SQLData.SQLNet.Database,
                 ConfData.conf.SQLData.SQLNet.Prefix,
+                ConfData.conf.SQLData.SQLNet.Suffix,
                 ConfData.conf.SQLData.SQLNet.MySQL.Structure[0],
                 ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
                 ConfData.conf.SQLData.SQLNet.MySQL.Structure[2],
                 ConfData.conf.SQLData.SQLNet.MySQL.Structure[3],
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[4],
                 ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-", "").Replace("_", ""));
             // 建表
             try
@@ -86,7 +92,8 @@ namespace CsAsODS
                 if (!string.IsNullOrEmpty(line[i]))
                 {
                     string[] sz = line[i].ToString().Split(',');
-                    t3 = Task.Factory.StartNew(() => Update(sz[0], sz[1]));
+                    t3 = Task.Factory.StartNew(() => Update(sz[0], sz[1], sz.Length > 2 ? sz[2] : ""));
+                    //不越界
                 }
             }
             Task.WaitAll(t3);
@@ -94,12 +101,33 @@ namespace CsAsODS
             CCUtility.g_Utility.Taskbar(LangData.lg.General.QuestFinish);
         }
 
-        void Update(in string ID, in string Ecco)
+        void Update(in string ID, in string Ecco, in string Add)
         {
             MySqlConnection ThreadPoolCon = new MySqlConnection(szConnection);
             ThreadPoolCon.Open();
-            string str = String.Format("UPDATE `{0}_ecco` SET `{4}` = '{2}' WHERE `{0}_ecco`.`{3}` = '{1}'",
-                ConfData.conf.SQLData.SQLNet.Prefix, ID, Ecco, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
+            string str;
+            if (Add != "")
+            {
+                str = String.Format("UPDATE `{0}_{1}` SET `{6}` = '{3}' WHERE `{0}_{1}`.`{5}` = '{2}'; UPDATE `{0}_{1}` SET `{7}` = '{4}' WHERE `{0}_{1}`.`{5}` = '{2}'",
+                ConfData.conf.SQLData.SQLNet.Prefix,
+                ConfData.conf.SQLData.SQLNet.Suffix,
+                ID,
+                Ecco,
+                Add,
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3],
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[4]);
+            }
+            else
+            {
+                str = String.Format("UPDATE `{0}_{1}` SET `{5}` = '{3}' WHERE `{0}_{1}`.`{4}` = '{2}';",
+                ConfData.conf.SQLData.SQLNet.Prefix,
+                ConfData.conf.SQLData.SQLNet.Suffix,
+                ID,
+                Ecco,
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
+            }
             //更新SQL
             MySqlCommand cmd = new MySqlCommand(str, ThreadPoolCon);
             if (cmd.ExecuteNonQuery() < 0)
@@ -149,19 +177,29 @@ namespace CsAsODS
                 string[][] ary = empty.ToArray();
                 for (int i = 0; i < ary.Length; i++)
                 {
-                    Insert(ary[i][0], @ary[i][1], 0);
+                    Insert(ary[i][0], ary[i][1], 0, "0");
                 }
                 SQL_con.Close();
                 empty.Clear();
             }
         }
 
-        void Insert(string szID, string szNick, int szEcco)
+        void Insert(string szID, string szNick, int szEcco, string szAdd)
         {
-            string UniNick = CCUtility.g_Utility.get_uft8(@szNick);
+            string UniNick = CCUtility.g_Utility.get_uft8(CCUtility.g_Utility.FormatNick(szNick));
             CCUtility.g_Utility.Warn(LangData.lg.SQL.Insert + ": [" + szID + "]");
-            string str = String.Format("INSERT INTO `{0}_ecco` (`{4}`, `{5}`, `{6}`) VALUES ('{1}', '{2}', '{3}')",
-                ConfData.conf.SQLData.SQLNet.Prefix, szID, @UniNick, szEcco, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[2], ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
+            string str = String.Format(
+                "INSERT INTO `{0}_{1}` (`{6}`, `{7}`, `{8}`, `{9}`) VALUES ('{2}', '{3}', '{4}', '{5}')",
+                ConfData.conf.SQLData.SQLNet.Prefix,
+                ConfData.conf.SQLData.SQLNet.Suffix, 
+                szID, 
+                UniNick, 
+                szEcco, 
+                szAdd, 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2], 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3], 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[4]);
             //更新SQL
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
             if (cmd.ExecuteNonQuery() > 0)
@@ -172,9 +210,15 @@ namespace CsAsODS
 
         string Request(string szID, string szNick)
         {
-            string UniNick = CCUtility.g_Utility.get_uft8(@szNick);
-            string str = String.Format("UPDATE `{0}_ecco` SET `{4}` = '{2}' WHERE `{0}_ecco`.`{3}` = '{1}'; select * from {0}_ecco where {3}= '{1}'",
-                ConfData.conf.SQLData.SQLNet.Prefix, szID, @UniNick, ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], ConfData.conf.SQLData.SQLNet.MySQL.Structure[2]);
+            string UniNick = CCUtility.g_Utility.get_uft8(CCUtility.g_Utility.FormatNick(szNick));
+            string str = String.Format(
+                "UPDATE `{0}_{1}` SET `{5}` = '{3}' WHERE `{0}_{1}`.`{4}` = '{2}'; select * from `{0}_{1}` where `{4}`= '{2}'",
+                ConfData.conf.SQLData.SQLNet.Prefix, 
+                ConfData.conf.SQLData.SQLNet.Suffix, 
+                szID, 
+                UniNick, 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], 
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2]);
             //设置查询命令
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
             MySqlDataReader reader = null;
@@ -187,14 +231,14 @@ namespace CsAsODS
                 if (!reader.HasRows)//不存在则加入列表
                 {
                     CCUtility.g_Utility.Warn(LangData.lg.SQL.Empty);
-                    string[] a = { szID, @UniNick };
+                    string[] a = { szID, UniNick };
                     empty.Add(a);
                 }
                 else
                 {
                     while (reader.Read())
                     {
-                        szReturn = reader[0].ToString() + "," + reader[1].ToString() + "," + reader[3].ToString();
+                        szReturn = reader[0].ToString() + "," + reader[1].ToString() + "," + reader[3].ToString() + "," + reader[4].ToString();
                     }
                 }
                 return szReturn;

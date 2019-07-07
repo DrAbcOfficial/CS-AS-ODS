@@ -7,7 +7,7 @@ namespace CsAsODS
 {
     class JsonSQL
     {
-        string JsonFile = Program.FileDir + "SqlJson/Ecco.json";
+        string JsonFile = String.Format(Program.FileDir + "SqlJson/{0}.json", ConfData.conf.SQLData.SQLJson.FileName);
         Dictionary<string, JsonCollection> JsonData = new Dictionary<string, JsonCollection>();
         public bool Start()
         {
@@ -40,18 +40,20 @@ namespace CsAsODS
                 if (!string.IsNullOrEmpty(line[i]))
                 {
                     string[] sz = line[i].Split(',');
-                    Update(sz[0], sz[1]);
+                    Update(sz[0], sz[1], sz.Length > 2 ? sz[2] : "");
                 }
             }
             CCUtility.g_Utility.Taskbar(LangData.lg.General.QuestFinish);
         }
 
-        void Update(string szID, string szEcco)
+        void Update(in string szID, in string szEcco, in string szAdd)
         {
             if (JsonData.ContainsKey(szID))
             {
                 JsonCollection data = JsonData[szID];
                 data.Ecco = Convert.ToInt32(szEcco);
+                if(szAdd != "")
+                    data.Addition = szAdd;
                 JsonData[szID] = data;
             }
             SaveIt();
@@ -94,7 +96,7 @@ namespace CsAsODS
             CCWriter.g_Writer.Writer(outPath, op);
         }
 
-        string Request(string szID, string szNick)
+        string Request(in string szID, in string szNick)
         {
             try
             {
@@ -102,9 +104,9 @@ namespace CsAsODS
                 if (JsonData.ContainsKey(szID))
                 {
                     JsonCollection data = JsonData[szID];
-                    data.Nick = @szNick;
+                    data.Nick = CCUtility.g_Utility.FormatNick(szNick);
                     JsonData[szID] = data;
-                    szReturn = data.ID + "," + data.SteamID + "," + @szNick + "," + data.Ecco;
+                    szReturn = data.ID + "," + data.SteamID + "," + data.Nick + "," + data.Ecco + data.Addition;
                 }
                 else
                 {
@@ -112,11 +114,12 @@ namespace CsAsODS
                     {
                         ID = JsonData.Count + 1,
                         SteamID = szID,
-                        Nick = @szNick,
-                        Ecco = 0
+                        Nick = szNick,
+                        Ecco = 0,
+                        Addition = ""
                     };
                     JsonData[szID] = data;
-                    szReturn = data.ID + "," + data.SteamID + "," + data.Nick + "," + data.Ecco;
+                    szReturn = data.ID + "," + data.SteamID + "," + data.Nick + "," + data.Ecco + "," + data.Addition;
                 }
                 SaveIt();
                 return szReturn;
@@ -147,5 +150,6 @@ namespace CsAsODS
         public string SteamID { get; set; } = "";
         public string Nick { get; set; } = "";
         public int Ecco { get; set; } = 0;
+        public string Addition { get; set; } = "";
     }
 }
