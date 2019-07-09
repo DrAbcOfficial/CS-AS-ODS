@@ -168,7 +168,7 @@ class CCIPData
 void PluginInit()
 {
 	g_Module.ScriptInfo.SetAuthor("Dr.Abc");
-	g_Module.ScriptInfo.SetContactInfo("Bruh.");
+	g_Module.ScriptInfo.SetContactInfo("https://github.com/DrAbcrealone");
 	
 	CCIPData data;
 	data.Code = "UNK";
