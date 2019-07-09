@@ -1,46 +1,55 @@
-{
-    "General": {
-        "Exit": "按任意键退出....",
-        "EmptyInput": "输入的内容为空",
-        "ReadingFile": "正在读取...",
-        "ReadingFailed": "读取失败咯",
-        "ReadingStream": "正在读取流...",
-        "WriteEmpty": "空白,不写出",
-        "Writted": "写入成功！",
-        "CreateWrite": "创建新文件...",
-        "WriteFailed": "写出失败咯",
-        "WriteAcupied": "被占用，不写入",
-        "ReadingJson": "正在读取配置文件",
-        "JsonReadFailed": "配置文件读取失败！",
-        "Running": "成功！程序正在运行中！",
-        "QuestFinish": "所有任务已完成！",
-        "ThreadEnd": "线程已终止",
-        "Retrying": "正在重试第 {0} 次...线程编号：{1}"
-    },
-    "GeoIP": {
-        "Geoing": "GeoIP开始监听文件...",
-        "Changed": "文件被改变,开始查找IP库",
-        "EmptyIP": "空白ip,不获取地址",
-        "NetError": "发生网络错误！",
-        "SendingAdd": "正在向服务器发送地址",
-        "Error": "发生错误",
-        "IPAddSucc": "成功！获取了地址！",
-        "EmptyRespond": "响应为空！"
-    },
-    "SQL": {
-        "Running": "正在运行SQL服务",
-        "Connected": "SQL服务器链接成功！",
-        "ConError": "SQL服务器链接失败！请检查服务器或设置",
-        "ConNetError": "SQL服务器网络链接失败！请检查服务器或设置",
-        "RequstError": "SQL查询失败！",
-        "Changed": "SQL临时文件已改变，开始发送信息！",
-        "Empty": "查询的数据为空！",
-        "FirstRun": "第一次运行，开始进行初始化",
-        "Insert": "向SQL添加记录",
-        "Inserted": "添加记录成功！",
-        "Update": "向SQL更新记录！",
-        "Updated": "更新记录成功！",
-        "UpdateFailed": "更新记录失败！",
-        "Remain": "剩余 {0} 个记录"
-    }
+﻿{
+	"General": {
+		"Log": {
+			"Time": "当前时间",
+			"Message": "异常信息",
+			"Source": "异常对象",
+			"StackTrace": "调用堆栈",
+			"TargetSite": "触发方法"
+		},
+		"Exit": "按任意键退出....",
+		"EmptyInput": "输入的内容为空",
+		"ReadingFile": "正在读取...",
+		"ReadingFailed": "读取失败咯",
+		"ReadingStream": "正在读取流...",
+		"WriteEmpty": "空白,不写出",
+		"Writted": "写入成功！",
+		"CreateWrite": "创建新文件...",
+		"WriteFailed": "写出失败咯",
+		"WriteAcupied": "被占用，不写入",
+		"ReadingJson": "正在读取配置文件",
+		"JsonReadFailed": "配置文件读取失败！",
+		"Running": "成功！程序正在运行中！",
+		"QuestFinish": "所有任务已完成！",
+		"ThreadEnd": "线程已终止",
+		"Retrying": "正在重试第 {0} 次...线程编号：{1}"
+	},
+	"GeoIP": {
+		"Disable": "设置没有开启GeoIP服务",
+		"Geoing": "GeoIP开始监听文件...",
+		"Changed": "文件被改变,开始查找IP库",
+		"EmptyIP": "空白ip,不获取地址",
+		"NetError": "发生网络错误！",
+		"SendingAdd": "正在向服务器发送地址",
+		"Error": "发生错误",
+		"IPAddSucc": "成功！获取了地址！",
+		"EmptyRespond": "响应为空！"
+	},
+	"SQL": {
+		"Disable": "设置没有开启SQL服务",
+		"Running": "正在运行SQL服务",
+		"Connected": "SQL服务器链接成功！",
+		"ConError": "SQL服务器链接失败！请检查服务器或设置",
+		"ConNetError": "SQL服务器网络链接失败！请检查服务器或设置",
+		"RequstError": "SQL查询失败！",
+		"Changed": "SQL临时文件已改变，开始发送信息！",
+		"Empty": "查询的数据为空！",
+		"FirstRun": "第一次运行，开始进行初始化",
+		"Insert": "向SQL添加记录",
+		"Inserted": "添加记录成功！",
+		"Update": "向SQL更新记录！",
+		"Updated": "更新记录成功！",
+		"UpdateFailed": "更新记录失败！",
+		"Remain": "剩余 {0} 个记录"
+	}
 }
