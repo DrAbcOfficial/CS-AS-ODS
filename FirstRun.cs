@@ -45,7 +45,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.General.WriteFailed + ": " + e.Message);
+                CCUtility.g_Utility.Error(LangData.lg.General.WriteFailed, e);
             }
         }
     }

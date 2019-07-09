@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 
 namespace CsAsODS
@@ -17,7 +16,7 @@ namespace CsAsODS
                 "==============================================================================\n" +
                 "======          Sven-Coop C#-AngelScripts Object Detector System        ======\n" +
                 "======           Dr.Abc Contact:https://github.com/DrAbcrealone         ======\n" +
-                "====== ODS aka Ostade-Cylsilane if u wanna glue and detector something  ======\n" +
+                "======  ODS aka Ostade-Cylsilane if u wanna glue and detecte something  ======\n" +
                 "==============================================================================");
             //实例化
             GeoIP g_GeoIP = null;
@@ -32,6 +31,8 @@ namespace CsAsODS
                     GeoIPThread.Name = "GeoIP";
                     GeoIPThread.Start();
                 }
+                else
+                    CCUtility.g_Utility.Warn(LangData.lg.GeoIP.Disable);
                 if (ConfData.conf.SQLData.Enable)
                 {
 
@@ -39,6 +40,8 @@ namespace CsAsODS
                     SQLThread.Name = "SQLService";
                     SQLThread.Start();
                 }
+                else
+                    CCUtility.g_Utility.Warn(LangData.lg.SQL.Disable);
                 ThreadBreak();
                 //提示
                 CCUtility.g_Utility.Succ(LangData.lg.General.Running);
@@ -70,9 +73,8 @@ namespace CsAsODS
                                 Console.WriteLine(LangData.lg.General.ThreadEnd + ": " + g_GeoIP.ToString());
                             }
                             //退出
-                            Console.WriteLine("LangData.lg.General.Exit");
-                            Console.ReadKey();
-                            Process.GetCurrentProcess().Kill();
+                            Console.WriteLine(LangData.lg.General.Exit);
+                            Environment.Exit(0);
                             break;
                         }
                         else

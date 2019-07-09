@@ -7,14 +7,16 @@ namespace CsAsODS
 {
     class JsonSQL
     {
-        string JsonFile = String.Format(Program.FileDir + "SqlJson/{0}.json", ConfData.conf.SQLData.SQLJson.FileName);
+        string JsonFile = String.Format("{1}\\Sql\\{0}.json",
+                                        ConfData.conf.SQLData.SQLJson.FileName,
+                                        Program.FileDir + ConfData.conf.General.Save);
         Dictionary<string, JsonCollection> JsonData = new Dictionary<string, JsonCollection>();
         public bool Start()
         {
-            if (!Directory.Exists(Program.FileDir + "SqlJson") || !File.Exists(JsonFile))
+            if (!Directory.Exists(Program.FileDir + ConfData.conf.General.Save + "\\Sql") || !File.Exists(JsonFile))
             {
                 CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
-                Directory.CreateDirectory(Program.FileDir + "/SqlJson");
+                Directory.CreateDirectory(Program.FileDir + ConfData.conf.General.Save + "\\Sql");
                 CCWriter.g_Writer.Writer(JsonFile, JsonConvert.SerializeObject(JsonData, new JsonSerializerSettings() { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii }));
             }
             else
@@ -52,7 +54,7 @@ namespace CsAsODS
             {
                 JsonCollection data = JsonData[szID];
                 data.Ecco = Convert.ToInt32(szEcco);
-                if(szAdd != "")
+                if (szAdd != "")
                     data.Addition = szAdd;
                 JsonData[szID] = data;
             }
@@ -126,7 +128,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.RequstError + ": " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.RequstError, e);
             }
             return null;
         }
@@ -140,7 +142,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed + ": " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed, e);
             }
         }
     }

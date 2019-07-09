@@ -5,9 +5,11 @@ namespace CsAsODS
 {
     public class General
     {
+        public string Save { get; set; } = "Ods";
         public string Lang { get; set; } = "zh-CN";
         public bool Hex { get; set; } = false;
         public bool LogIO { get; set; } = true;
+        public bool Log { get; set; } = true;
         public int Retry { get; set; } = 6;
         public int RetryTime { get; set; } = 1;
     }
@@ -80,7 +82,7 @@ namespace CsAsODS
         public static Config conf = new Config();
         public static bool JsReader()
         {
-            string json = Reader.g_Reader.JsonReader(Program.FileDir + "config.json");
+            string json = Reader.g_Reader.JsonReader(Program.FileDir + ConfData.conf.General.Save + "\\config.json");
             if (string.IsNullOrEmpty(json))
             {
                 CCUtility.g_Utility.CritWarn(
@@ -102,7 +104,7 @@ namespace CsAsODS
                     CCUtility.g_Utility.CritError(
                         "文件格式不正确！无法读取配置文件！请检查json文件拼写！\n" +
                         "The file format is incorrect! Unable to read the configuration file! Please check the spelling of JSON file!\n",
-                        "错误代码/Error Code: " + e.Message.ToString() + "\n");
+                        "错误代码/Error Code: ", e);
                     return false;
                 }
             }
@@ -111,7 +113,7 @@ namespace CsAsODS
         {
             CCUtility.g_Utility.Warn("将生成默认配置文件\nDefault Configuration files will be generated");
             string dconf = JsonConvert.SerializeObject(conf);
-            CCWriter.g_Writer.Writer(Program.FileDir + "config.json", dconf);
+            CCWriter.g_Writer.Writer(Program.FileDir + conf.General.Save + "\\config.json", dconf);
             CCUtility.g_Utility.Succ("默认配置文件生成完毕\nThe default configuration file has been generated");
         }
     }

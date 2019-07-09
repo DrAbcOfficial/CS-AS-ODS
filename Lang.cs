@@ -10,8 +10,18 @@ namespace CsAsODS
         public LangGeoIP GeoIP { get; set; } = new LangGeoIP();
         public LangSQL SQL { get; set; } = new LangSQL();
     }
+    public class LangLog
+    {
+        public string Time { get; set; } = "当前时间";
+        public string Message { get; set; } = "异常信息";
+        public string Source { get; set; } = "异常对象";
+        public string StackTrace { get; set; } = "调用堆栈";
+        public string TargetSite { get; set; } = "触发方法";
+
+    }
     public class LangGeneral
     {
+        public LangLog Log = new LangLog();
         public string Exit { get; set; } = "按任意键退出....";
         public string EmptyInput { get; set; } = "输入的内容为空";
         public string ReadingFile { get; set; } = "正在读取...";
@@ -32,6 +42,7 @@ namespace CsAsODS
     }
     public class LangSQL
     {
+        public string Disable { get; set; } = "设置没有开启SQL服务";
         public string Running { get; set; } = "正在运行SQL服务";
         public string Connected { get; set; } = "SQL服务器链接成功！";
         public string ConError { get; set; } = "SQL服务器链接失败！请检查服务器或设置";
@@ -50,6 +61,7 @@ namespace CsAsODS
 
     public class LangGeoIP
     {
+        public string Disable { get; set; } = "设置没有开启GeoIP服务";
         public string Geoing { get; set; } = "GeoIP开始监听文件...";
         public string Changed { get; set; } = "文件被改变,开始查找IP库";
         public string EmptyIP { get; set; } = "空白ip,不获取地址";
@@ -65,13 +77,13 @@ namespace CsAsODS
         public static Lang lg = new Lang();
         public static bool LangReader()
         {
-            string json = Reader.g_Reader.JsonReader(Program.FileDir + "lang/" + ConfData.conf.General.Lang + ".json");
+            string json = Reader.g_Reader.JsonReader(Program.FileDir + ConfData.conf.General.Save + "\\lang\\" + ConfData.conf.General.Lang + ".json");
             if (string.IsNullOrEmpty(json))
             {
                 CCUtility.g_Utility.CritWarn(
                     "语言文件为空，将使用默认语言.\n" +
                     "The language file is empty and the default language will be used.\n");
-                if (!File.Exists(Program.FileDir + "lang/zh-CN.json"))
+                if (!File.Exists(Program.FileDir + ConfData.conf.General.Save + "\\lang\\zh-CN.json"))
                     CreateJson();
                 return true;
             }
@@ -87,7 +99,7 @@ namespace CsAsODS
                     CCUtility.g_Utility.CritError(
                         "文件格式不正确！无法读取语言文件！请检查json文件拼写！\n" +
                         "The file format is incorrect! Unable to read the language file! Please check the spelling of JSON file!\n",
-                        "错误代码/Error Code: " + e.Message.ToString() + "\n");
+                        "错误代码/Error Code: ", e);
                     return false;
                 }
             }
@@ -96,9 +108,9 @@ namespace CsAsODS
             {
                 CCUtility.g_Utility.Warn("将生成默认语言文件\nThe default language file will be generated");
                 string zhcn = JsonConvert.SerializeObject(lg);
-                if (!Directory.Exists(Program.FileDir + "lang"))
-                    Directory.CreateDirectory(Program.FileDir + "lang");
-                CCWriter.g_Writer.Writer(Program.FileDir + "lang/zh-CN.json", zhcn);
+                if (!Directory.Exists(Program.FileDir + ConfData.conf.General.Save + "\\lang"))
+                    Directory.CreateDirectory(Program.FileDir + ConfData.conf.General.Save + "\\lang");
+                CCWriter.g_Writer.Writer(Program.FileDir + ConfData.conf.General.Save + "\\lang\\zh-CN.json", zhcn);
                 CCUtility.g_Utility.Succ("默认语言文件输出完毕\nDefault Language File generated");
             }
         }

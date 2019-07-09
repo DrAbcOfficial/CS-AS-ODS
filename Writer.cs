@@ -31,7 +31,7 @@ namespace CsAsODS
                 }
                 catch (Exception e)
                 {
-                    CCUtility.g_Utility.Error(LangData.lg.General.WriteFailed + ": " + e.Message);
+                    CCUtility.g_Utility.Error(LangData.lg.General.WriteFailed, e);
                 }
             }
             if (!CCUtility.g_Utility.IsFileInUse(outPath))
@@ -39,7 +39,7 @@ namespace CsAsODS
                 try
                 {
                     FileStream fs = new FileStream(outPath, FileMode.Create);
-                    StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
+                    StreamWriter sw = new StreamWriter(fs, Encoding.GetEncoding(ConfData.conf.SQLData.SQLNet.MySQL.Encode));
                     //开始写入
                     sw.Write(outContent);
                     //清空缓存区
@@ -51,7 +51,7 @@ namespace CsAsODS
                 }
                 catch (Exception e)
                 {
-                    CCUtility.g_Utility.Error(LangData.lg.General.WriteFailed + ": " + e.Message);
+                    CCUtility.g_Utility.Error(LangData.lg.General.WriteFailed, e);
                 }
             }
             else

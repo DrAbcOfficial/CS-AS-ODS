@@ -20,11 +20,11 @@ namespace CsAsODS
                     sr.Close();
                     CCUtility.g_Utility.FileIOLog(LangData.lg.General.ReadingFile + ":" + GeoFile + "...");
                     //去分隔符
-                    return @line;
+                    return line;
                 }
                 catch (Exception e)
                 {
-                    CCUtility.g_Utility.Error(LangData.lg.General.ReadingFailed + ": " + e.Message);
+                    CCUtility.g_Utility.Error(LangData.lg.General.ReadingFailed, e);
                     return null;
                 }
             }
@@ -46,7 +46,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.General.ReadingFailed + ": " + e.Message);
+                CCUtility.g_Utility.Error(LangData.lg.General.ReadingFailed, e);
                 return null;
             }
         }
@@ -65,7 +65,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.General.JsonReadFailed + ": " + e.Message);
+                CCUtility.g_Utility.Error(LangData.lg.General.JsonReadFailed, e);
                 return null;
             }
         }

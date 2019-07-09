@@ -44,7 +44,7 @@ namespace CsAsODS
                 }
                 catch (Exception ex)
                 {
-                    CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error + ": " + ex.Message.ToString());
+                    CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error, ex);
                 }
             }
             //写
@@ -111,7 +111,7 @@ namespace CsAsODS
                 }
                 catch (Exception e)
                 {
-                    CCUtility.g_Utility.Error(e.Message);
+                    CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error, e);
                 }
                 return "";
             }
@@ -142,12 +142,12 @@ namespace CsAsODS
                 catch (WebException e)
                 {
                     //发生网络错误时,获取错误响应信息
-                    CCUtility.g_Utility.Error(LangData.lg.GeoIP.NetError + " " + e.Message + ".");
+                    CCUtility.g_Utility.Error(LangData.lg.GeoIP.NetError, e);
                 }
                 catch (Exception e)
                 {
                     //发生异常时把错误信息当作错误信息返回
-                    CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error + ": " + e.Message);
+                    CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error, e);
 
                 }
                 finally

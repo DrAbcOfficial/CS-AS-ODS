@@ -15,14 +15,50 @@ namespace CsAsODS
             TextColor();
             FormatCon(szInput);
         }
-        public void Error(in string szInput)
+
+        public void WriteLog(in Exception e, string LogAddress = "")
         {
+            //都不启用输出个卵log
+            if (!ConfData.conf.General.Log)
+                return;
+            //e为空输出个卵log
+            if (e == null)
+                return;
+            //如果日志文件为空，则默认在Debug目录下新建 YYYY-mm-dd_Log.log文件
+            if (LogAddress == "")
+                LogAddress = Environment.CurrentDirectory + '\\' + ConfData.conf.General.Save + "\\Log\\";
+            string LogName = LogAddress + DateTime.Now.Year + '-' +
+                    DateTime.Now.Month + '-' +
+                    DateTime.Now.Day + ".log";
+            //判断文件夹是否存在
+            if (!Directory.Exists(LogAddress))
+                Directory.CreateDirectory(LogAddress);
+            //把异常信息输出到文件
+            StreamWriter fs = new StreamWriter(LogName, true);
+            fs.WriteLine("<===================================================================>");
+            fs.WriteLine("[1] " + LangData.lg.General.Log.Time + ": " + DateTime.Now.ToString());
+            fs.WriteLine("[2] " + LangData.lg.General.Log.Message + ": " + e.Message);
+            fs.WriteLine("[3] " + LangData.lg.General.Log.Source + ": " + e.Source);
+            fs.WriteLine("[4] " + LangData.lg.General.Log.StackTrace + ": \n" + e.StackTrace.Trim());
+            fs.WriteLine("[5] " + LangData.lg.General.Log.TargetSite + ": " + e.TargetSite);
+            fs.WriteLine("<===================================================================>");
+            fs.WriteLine();
+            fs.Close();
+        }
+
+        public void Error(in string inPut, in Exception e = null)
+        {
+            WriteLog(e);
             TextColor("Red");
-            FormatCon("[ERROR]" + szInput);
+            string Message = "";
+            if (e != null)
+                Message = e.Message;
+            FormatCon("[ERROR]" + inPut + ": " + Message);
             TextColor();
         }
-        public void CritError(in string szInput, in string szReason = "")
+        public void CritError(in string inPut, in string szReason = "", in Exception e = null)
         {
+            WriteLog(e);
             TextColor("Red");
             FormatCon(
                     "\n==========================================================================================================\n" +
@@ -36,14 +72,18 @@ namespace CsAsODS
                     "　　ＯＯＯＯＯ　　　　　　　Ｏ　　　Ｏ　　　　　　Ｏ　　　Ｏ　　　　　　  ＯＯＯ  　　　　　　　Ｏ　　　Ｏ\n" +
                     "==========================================================================================================\n");
             TextColor("Yellow");
-            FormatCon("[ERROR]" + szInput);
+            string Message = "";
+            if (e != null)
+                Message = e.Message;
+            FormatCon("[ERROR]" + inPut + ": " + Message);
             TextColor("Magenta");
             FormatCon(szReason);
             TextColor();
             Program.cts.Cancel();
         }
-        public void CritWarn(in string szInput)
+        public void CritWarn(in string inPut, in Exception e = null)
         {
+            WriteLog(e);
             TextColor("Yellow");
             FormatCon(
                     "\n==========================================================================================================\n" +
@@ -57,13 +97,20 @@ namespace CsAsODS
                     "　　     　ＯＯ　　ＯＯ　　　　　　ＯＯ　　　ＯＯ　　　　 　Ｏ　　　ＯＯ　　　　　Ｏ　　　ＯＯ　　　\n" +
                     "==========================================================================================================\n");
             TextColor("Magenta");
-            FormatCon("[WARNNING]" + szInput);
+            string Message = "";
+            if (e != null)
+                Message = e.Message;
+            FormatCon("[WARNNING]" + inPut + ": " + Message);
             TextColor();
         }
-        public void Warn(in string szInput)
+        public void Warn(in string szInput, in Exception e = null)
         {
+            WriteLog(e);
             TextColor("Yellow");
-            FormatCon("[WARNNING]" + szInput);
+            string Message = "";
+            if (e != null)
+                Message = e.Message;
+            FormatCon("[WARNNING]" + szInput + ": " + Message);
             TextColor();
         }
         public void Succ(in string szInput)
@@ -104,7 +151,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error + ": " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.GeoIP.Error, e);
             }
         }
         //占用判断防止报错
@@ -121,7 +168,7 @@ namespace CsAsODS
                 }
                 catch (Exception e)
                 {
-                    g_Utility.Warn(LangData.lg.General.ReadingFailed + ":" + e.Message.ToString());
+                    g_Utility.Warn(LangData.lg.General.ReadingFailed, e);
                 }
                 finally
                 {
@@ -157,9 +204,9 @@ namespace CsAsODS
                 }
                 catch (Exception e)
                 {
-                    CCUtility.g_Utility.Warn(string.Format(LangData.lg.General.Retrying, ConfData.conf.General.Retry - tries + 1, Thread.CurrentThread));
+                    Warn(string.Format(LangData.lg.General.Retrying, ConfData.conf.General.Retry - tries + 1, Thread.CurrentThread.Name), e);
                     if (--tries == 0)
-                        CCUtility.g_Utility.CritError(LangData.lg.SQL.ConError + ": " + e.ToString());
+                        CritError(LangData.lg.SQL.ConError, "", e);
                     Thread.Sleep(ConfData.conf.General.RetryTime * 1000);
                 }
             }

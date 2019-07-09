@@ -55,7 +55,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError, e);
                 return false;
             }
         }
@@ -71,7 +71,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError, e);
             }
         }
         //改变时
@@ -107,7 +107,7 @@ namespace CsAsODS
                 var filter = Builders<BsonDocument>.Filter.Eq("SteamID", "ID");
                 var update = Builders<BsonDocument>.Update.Set("Ecco", Convert.ToInt32(Ecco));
                 collection.UpdateMany(filter, update);
-                if(Add != "")
+                if (Add != "")
                 {
                     update = Builders<BsonDocument>.Update.Set("Addition", Add);
                     collection.UpdateMany(filter, update);
@@ -116,7 +116,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed + ": " + ID + ":" + Ecco + "|Reason: " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed + ": " + ID + ":" + Ecco + "|Reason: ", e);
             }
         }
 
@@ -183,7 +183,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError, e);
             }
         }
 
@@ -213,7 +213,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.RequstError + ": " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.RequstError, e);
             }
             return null;
         }

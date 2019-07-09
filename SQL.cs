@@ -67,7 +67,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError + ": " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.ConError, e);
             }
         }
         //改变时
@@ -145,6 +145,7 @@ namespace CsAsODS
             bool IsExs = false;
             string[] outLine = Reader.g_Reader.ReadIt(outPath).Split('\n');
             SQLOpen(SQL_con);
+            //查找是否存在此项
             for (int i = 0; i < outLine.Length; i++)
             {
                 if (string.IsNullOrEmpty(outLine[i]))
@@ -152,6 +153,7 @@ namespace CsAsODS
                 else
                 {
                     string[] zj = outLine[i].Split(',');
+                    //存在
                     if (zj[1] == line[0])
                     {
                         outLine[i] = Request(line[0], line[1]);
@@ -191,21 +193,19 @@ namespace CsAsODS
             string str = String.Format(
                 "INSERT INTO `{0}_{1}` (`{6}`, `{7}`, `{8}`, `{9}`) VALUES ('{2}', '{3}', '{4}', '{5}')",
                 ConfData.conf.SQLData.SQLNet.Prefix,
-                ConfData.conf.SQLData.SQLNet.Suffix, 
-                szID, 
-                UniNick, 
-                szEcco, 
-                szAdd, 
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], 
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2], 
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3], 
+                ConfData.conf.SQLData.SQLNet.Suffix,
+                szID,
+                UniNick,
+                szEcco,
+                szAdd,
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2],
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3],
                 ConfData.conf.SQLData.SQLNet.MySQL.Structure[4]);
             //更新SQL
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
             if (cmd.ExecuteNonQuery() > 0)
-            {
                 CCUtility.g_Utility.Succ(LangData.lg.SQL.Inserted);
-            }
         }
 
         string Request(string szID, string szNick)
@@ -213,11 +213,11 @@ namespace CsAsODS
             string UniNick = CCUtility.g_Utility.get_uft8(CCUtility.g_Utility.FormatNick(szNick));
             string str = String.Format(
                 "UPDATE `{0}_{1}` SET `{5}` = '{3}' WHERE `{0}_{1}`.`{4}` = '{2}'; select * from `{0}_{1}` where `{4}`= '{2}'",
-                ConfData.conf.SQLData.SQLNet.Prefix, 
-                ConfData.conf.SQLData.SQLNet.Suffix, 
-                szID, 
-                UniNick, 
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1], 
+                ConfData.conf.SQLData.SQLNet.Prefix,
+                ConfData.conf.SQLData.SQLNet.Suffix,
+                szID,
+                UniNick,
+                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
                 ConfData.conf.SQLData.SQLNet.MySQL.Structure[2]);
             //设置查询命令
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
@@ -245,7 +245,7 @@ namespace CsAsODS
             }
             catch (Exception e)
             {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.RequstError + ": " + e.Message.ToString());
+                CCUtility.g_Utility.Error(LangData.lg.SQL.RequstError, e);
             }
             finally
             {
