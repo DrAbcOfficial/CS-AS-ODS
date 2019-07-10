@@ -26,7 +26,7 @@ namespace CsAsODS
                 return;
             //如果日志文件为空，则默认在Debug目录下新建 YYYY-mm-dd_Log.log文件
             if (LogAddress == "")
-                LogAddress = Environment.CurrentDirectory + '\\' + ConfData.conf.General.Save + "\\Log\\";
+                LogAddress = Environment.CurrentDirectory + '/' + ConfData.conf.General.Save + "/Log/";
             string LogName = LogAddress + DateTime.Now.Year + '-' +
                     DateTime.Now.Month + '-' +
                     DateTime.Now.Day + ".log";

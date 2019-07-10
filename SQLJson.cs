@@ -7,16 +7,16 @@ namespace CsAsODS
 {
     class JsonSQL
     {
-        string JsonFile = String.Format("{1}\\Sql\\{0}.json",
+        string JsonFile = String.Format("{1}/Sql/{0}.json",
                                         ConfData.conf.SQLData.SQLJson.FileName,
                                         Program.FileDir + ConfData.conf.General.Save);
         Dictionary<string, JsonCollection> JsonData = new Dictionary<string, JsonCollection>();
         public bool Start()
         {
-            if (!Directory.Exists(Program.FileDir + ConfData.conf.General.Save + "\\Sql") || !File.Exists(JsonFile))
+            if (!Directory.Exists(Program.FileDir + ConfData.conf.General.Save + "/Sql") || !File.Exists(JsonFile))
             {
                 CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
-                Directory.CreateDirectory(Program.FileDir + ConfData.conf.General.Save + "\\Sql");
+                Directory.CreateDirectory(Program.FileDir + ConfData.conf.General.Save + "/Sql");
                 CCWriter.g_Writer.Writer(JsonFile, JsonConvert.SerializeObject(JsonData, new JsonSerializerSettings() { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii }));
             }
             else
@@ -108,7 +108,7 @@ namespace CsAsODS
                     JsonCollection data = JsonData[szID];
                     data.Nick = CCUtility.g_Utility.FormatNick(szNick);
                     JsonData[szID] = data;
-                    szReturn = data.ID + "," + data.SteamID + "," + data.Nick + "," + data.Ecco + data.Addition;
+                    szReturn = data.ID + "," + data.SteamID + "," + data.Ecco + "," + data.Addition;
                 }
                 else
                 {
@@ -121,7 +121,7 @@ namespace CsAsODS
                         Addition = ""
                     };
                     JsonData[szID] = data;
-                    szReturn = data.ID + "," + data.SteamID + "," + data.Nick + "," + data.Ecco + "," + data.Addition;
+                    szReturn = data.ID + "," + data.SteamID + "," + data.Ecco + "," + data.Addition;
                 }
                 SaveIt();
                 return szReturn;

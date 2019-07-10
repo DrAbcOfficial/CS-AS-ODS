@@ -77,13 +77,13 @@ namespace CsAsODS
         public static Lang lg = new Lang();
         public static bool LangReader()
         {
-            string json = Reader.g_Reader.JsonReader(Program.FileDir + ConfData.conf.General.Save + "\\lang\\" + ConfData.conf.General.Lang + ".json");
+            string json = Reader.g_Reader.JsonReader(Program.FileDir + ConfData.conf.General.Save + "/lang/" + ConfData.conf.General.Lang + ".json");
             if (string.IsNullOrEmpty(json))
             {
                 CCUtility.g_Utility.CritWarn(
                     "语言文件为空，将使用默认语言.\n" +
                     "The language file is empty and the default language will be used.\n");
-                if (!File.Exists(Program.FileDir + ConfData.conf.General.Save + "\\lang\\zh-CN.json"))
+                if (!File.Exists(Program.FileDir + ConfData.conf.General.Save + "/lang/zh-CN.json"))
                     CreateJson();
                 return true;
             }
@@ -108,9 +108,9 @@ namespace CsAsODS
             {
                 CCUtility.g_Utility.Warn("将生成默认语言文件\nThe default language file will be generated");
                 string zhcn = JsonConvert.SerializeObject(lg);
-                if (!Directory.Exists(Program.FileDir + ConfData.conf.General.Save + "\\lang"))
-                    Directory.CreateDirectory(Program.FileDir + ConfData.conf.General.Save + "\\lang");
-                CCWriter.g_Writer.Writer(Program.FileDir + ConfData.conf.General.Save + "\\lang\\zh-CN.json", zhcn);
+                if (!Directory.Exists(Program.FileDir + ConfData.conf.General.Save + "/lang"))
+                    Directory.CreateDirectory(Program.FileDir + ConfData.conf.General.Save + "/lang");
+                CCWriter.g_Writer.Writer(Program.FileDir + ConfData.conf.General.Save + "/lang/zh-CN.json", zhcn);
                 CCUtility.g_Utility.Succ("默认语言文件输出完毕\nDefault Language File generated");
             }
         }

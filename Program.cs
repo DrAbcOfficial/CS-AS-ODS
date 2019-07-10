@@ -22,29 +22,37 @@ namespace CsAsODS
             GeoIP g_GeoIP = null;
             if (ConfData.JsReader() && LangData.LangReader())
             {
-                FirstInit fit = new FirstInit();
-                fit.FirstRun();
-                if (ConfData.conf.GeoData.Enable)
+                try
                 {
-                    g_GeoIP = new GeoIP();
-                    Thread GeoIPThread = new Thread(new ThreadStart(g_GeoIP.GeoWatcher));
-                    GeoIPThread.Name = "GeoIP";
-                    GeoIPThread.Start();
-                }
-                else
-                    CCUtility.g_Utility.Warn(LangData.lg.GeoIP.Disable);
-                if (ConfData.conf.SQLData.Enable)
-                {
+                    FirstInit fit = new FirstInit();
+                    fit.FirstRun();
+                    if (ConfData.conf.GeoData.Enable)
+                    {
+                        g_GeoIP = new GeoIP();
+                        Thread GeoIPThread = new Thread(new ThreadStart(g_GeoIP.GeoWatcher));
+                        GeoIPThread.Name = "GeoIP";
+                        GeoIPThread.Start();
+                    }
+                    else
+                        CCUtility.g_Utility.Warn(LangData.lg.GeoIP.Disable);
+                    if (ConfData.conf.SQLData.Enable)
+                    {
 
-                    Thread SQLThread = new Thread(new ThreadStart(FileWa.ThreadMethod));
-                    SQLThread.Name = "SQLService";
-                    SQLThread.Start();
+                        Thread SQLThread = new Thread(new ThreadStart(FileWa.ThreadMethod));
+                        SQLThread.Name = "SQLService";
+                        SQLThread.Start();
+                    }
+                    else
+                        CCUtility.g_Utility.Warn(LangData.lg.SQL.Disable);
+                    ThreadBreak();
+                    //提示
+                    CCUtility.g_Utility.Succ(LangData.lg.General.Running);
                 }
-                else
-                    CCUtility.g_Utility.Warn(LangData.lg.SQL.Disable);
-                ThreadBreak();
-                //提示
-                CCUtility.g_Utility.Succ(LangData.lg.General.Running);
+                catch (Exception e)
+                {
+                    CCUtility.g_Utility.WriteLog(e);
+                    cts.Cancel();
+                }
             }
             else
             {
@@ -72,7 +80,7 @@ namespace CsAsODS
                                 g_GeoIP.Stop();
                                 Console.WriteLine(LangData.lg.General.ThreadEnd + ": " + g_GeoIP.ToString());
                             }
-                            //退出
+                            //退出 
                             Console.WriteLine(LangData.lg.General.Exit);
                             Environment.Exit(0);
                             break;

@@ -68,12 +68,16 @@ namespace CSQLScoreData
 			FormatLog("IP data No Write!");				//畜生，你中了甚么
 	}
 
-    int GetKD(int&in Kill , int&in Death)
+    string GetKD(int&in Kill , int&in Death)
     {
         if(Death == 0)
-            return Kill;
+            return string(Kill);
         else
-            return int(Kill/Death);
+		{
+			string szKD = string(Kill/Death);
+			szKD.Resize(szKD.Find(".") + 1,false);
+			return szKD;
+		}
     }
 
 	void SQLCast( string&in Name, string&in szID )
@@ -131,7 +135,7 @@ class CCSQLData
 void PluginInit()
 {
 	g_Module.ScriptInfo.SetAuthor("Dr.Abc");
-	g_Module.ScriptInfo.SetContactInfo("https://github.com/DrAbcrealone");
+	g_Module.ScriptInfo.SetContactInfo("Bruh.");
 
 	//注册Time
 	g_Hooks.RegisterHook( Hooks::Player::ClientConnected, @ClientConnected );

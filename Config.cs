@@ -82,7 +82,7 @@ namespace CsAsODS
         public static Config conf = new Config();
         public static bool JsReader()
         {
-            string json = Reader.g_Reader.JsonReader(Program.FileDir + ConfData.conf.General.Save + "\\config.json");
+            string json = Reader.g_Reader.JsonReader(Program.FileDir + ConfData.conf.General.Save + "/config.json");
             if (string.IsNullOrEmpty(json))
             {
                 CCUtility.g_Utility.CritWarn(
@@ -113,7 +113,7 @@ namespace CsAsODS
         {
             CCUtility.g_Utility.Warn("将生成默认配置文件\nDefault Configuration files will be generated");
             string dconf = JsonConvert.SerializeObject(conf);
-            CCWriter.g_Writer.Writer(Program.FileDir + conf.General.Save + "\\config.json", dconf);
+            CCWriter.g_Writer.Writer(Program.FileDir + conf.General.Save + "/config.json", dconf);
             CCUtility.g_Utility.Succ("默认配置文件生成完毕\nThe default configuration file has been generated");
         }
     }
