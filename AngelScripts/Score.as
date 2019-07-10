@@ -12,7 +12,7 @@ namespace CSQLScoreData
 	string ThatDay;
 	dictionary SQLDataBase;
 
-	void ReadSQL()
+	bool ReadSQL(string&in szSteamId)
 	{
 		File @pFile = g_FileSystem.OpenFile( FileDir , OpenFile::READ );
 		if ( pFile !is null && pFile.IsOpen() )
@@ -24,18 +24,31 @@ namespace CSQLScoreData
 				if ( line.IsEmpty() )
 					continue;
 				array<string>@ buff = line.Split( "," );				//分割
-				CCSQLData data; //实例化
 				if(buff.length() > 0)
-				{	
-					data.Kill = atoi(buff[1]);
-					data.Death = atoi(buff[2]);
-					SQLDataBase[buff[0]] = data;
+				{
+					if(buff[1] == szSteamId)
+					{
+						CCSQLData data; //实例化
+						data.Kill = atoi(buff[2]);
+						data.Death = atoi(buff[3]);
+						SQLDataBase[buff[1]] = data;
+						return true;
+					}
+					else
+					{
+						FormatLog("IP data No Read!");		
+						continue;
+					}
 				}
 			}
 			pFile.Close();
+			return false;
 		}
 		else
+		{
 			FormatLog("IP data No Read!");							//畜生，你中了甚么
+			return false;
+		}
 	}
 	
 	void WriteMetaSQL( string MetaIP ,string FilePath = FileOut )
@@ -74,9 +87,8 @@ namespace CSQLScoreData
             return string(Kill);
         else
 		{
-			string szKD = string(Kill/Death);
-			szKD.Resize(szKD.Find(".") + 1,false);
-			return szKD;
+			string szKD = string(float(Kill)/float(Death));
+			return szKD.SubString(0,szKD.Find(".") + 2);
 		}
     }
 
@@ -135,7 +147,7 @@ class CCSQLData
 void PluginInit()
 {
 	g_Module.ScriptInfo.SetAuthor("Dr.Abc");
-	g_Module.ScriptInfo.SetContactInfo("Bruh.");
+	g_Module.ScriptInfo.SetContactInfo("https://github.com/DrAbcrealone");
 
 	//注册Time
 	g_Hooks.RegisterHook( Hooks::Player::ClientConnected, @ClientConnected );
@@ -169,7 +181,7 @@ HookReturnCode ClientPutInServer(CBasePlayer@ pPlayer)
 {
 	const string szSteamId = g_EngineFuncs.GetPlayerAuthId(pPlayer.edict());
 	if(!CSQLScoreData::SQLDataBase.exists(szSteamId))
-		CSQLScoreData::ReadSQL();
+		CSQLScoreData::ReadSQL(szSteamId);
 	CSQLScoreData::SQLCast(pPlayer.pev.netname, szSteamId );
 	return HOOK_HANDLED;
 }
