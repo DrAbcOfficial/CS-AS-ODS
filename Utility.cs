@@ -15,16 +15,17 @@ namespace CsAsODS
             TextColor();
             FormatCon(szInput);
         }
-
+        //写入锁
+        private readonly ReaderWriterLockSlim LogWriteLock = new ReaderWriterLockSlim();
         public void WriteLog(in Exception e, string LogAddress = "")
         {
             //都不启用输出个卵log
-            if (!ConfData.conf.General.Log)
+            if (ConfData.conf.General.Log == 0)
                 return;
             //e为空输出个卵log
             if (e == null)
                 return;
-            //如果日志文件为空，则默认在Debug目录下新建 YYYY-mm-dd_Log.log文件
+            //如果日志文件为空，则默认在目录下新建 YYYY-mm-dd.log文件
             if (LogAddress == "")
                 LogAddress = Environment.CurrentDirectory + '/' + ConfData.conf.General.Save + "/Log/";
             string LogName = LogAddress + DateTime.Now.Year + '-' +
@@ -33,6 +34,8 @@ namespace CsAsODS
             //判断文件夹是否存在
             if (!Directory.Exists(LogAddress))
                 Directory.CreateDirectory(LogAddress);
+            //佛祖保佑别饥饿
+            LogWriteLock.EnterWriteLock();
             //把异常信息输出到文件
             StreamWriter fs = new StreamWriter(LogName, true);
             fs.WriteLine("<===================================================================>");
@@ -44,8 +47,28 @@ namespace CsAsODS
             fs.WriteLine("<===================================================================>");
             fs.WriteLine();
             fs.Close();
+            //佛祖保佑别异常
+            LogWriteLock.ExitWriteLock();
         }
-
+        public void WriteRunLog(in string szLog)
+        {
+            //如果日志文件为空，则默认在目录下新建 YYYY-mm-dd.log文件
+            string LogAddress = Environment.CurrentDirectory + '/' + ConfData.conf.General.Save + "/Log/RunLog/";
+            string LogName = LogAddress + DateTime.Now.Year + '-' +
+                    DateTime.Now.Month + '-' +
+                    DateTime.Now.Day + ".log";
+            //判断文件夹是否存在
+            if (!Directory.Exists(LogAddress))
+                Directory.CreateDirectory(LogAddress);
+            //佛祖保佑别饥饿
+            LogWriteLock.EnterWriteLock();
+            //把异常信息输出到文件
+            StreamWriter fs = new StreamWriter(LogName, true);
+            fs.WriteLine(szLog);
+            fs.Close();
+            //佛祖保佑别异常
+            LogWriteLock.ExitWriteLock();
+        }
         public void Error(in string inPut, in Exception e = null)
         {
             WriteLog(e);
@@ -124,23 +147,26 @@ namespace CsAsODS
             TextColor();
             FormatCon(szInput);
         }
-
         public void FileIOLog(in string szInput)
         {
             if (ConfData.conf.General.LogIO)
                 FormatCon(szInput);
         }
-
         public void FileWatcherLog(in string szInput)
         {
             TextColor("Cyan");
             FormatCon(szInput);
             TextColor();
         }
-
         public void FormatCon(in string szInput)
         {
-            Console.WriteLine("==>[" + DateTime.Now.ToString() + "]  " + szInput + ".");
+            string szLog = string.Format("==>{0}|{1}  {2}.",
+                ConfData.conf.General.ShowTime ? "[" + DateTime.Now.ToString() + "]" : "",
+                ConfData.conf.General.ShowID ? "[" + Thread.CurrentThread.ManagedThreadId.ToString() + "]" : "",
+                szInput);
+            Console.WriteLine(szLog);
+            if (ConfData.conf.General.Log > 1)
+                WriteRunLog(szLog);
         }
         //彩色字体
         private void TextColor(string colorName = "White")
@@ -184,8 +210,8 @@ namespace CsAsODS
         public string get_uft8(in string unicodeString)
         {
             UTF8Encoding utf8 = new UTF8Encoding();
-            Byte[] encodedBytes = utf8.GetBytes(unicodeString);
-            String decodedString = utf8.GetString(encodedBytes);
+            byte[] encodedBytes = utf8.GetBytes(unicodeString);
+            string decodedString = utf8.GetString(encodedBytes);
             return decodedString;
         }
         public string FormatNick(in string shitName)
@@ -194,7 +220,7 @@ namespace CsAsODS
         }
         public void AutoRetry(Action action)
         {
-            var tries = ConfData.conf.General.Retry;
+            int tries = ConfData.conf.General.Retry;
             while (true)
             {
                 try
@@ -210,6 +236,14 @@ namespace CsAsODS
                     Thread.Sleep(ConfData.conf.General.RetryTime * 1000);
                 }
             }
+        }
+        //托管
+        public void ExtThread(Action action)
+        {
+            new Thread(() =>
+            {
+                action();
+            }).Start();
         }
     }
 }

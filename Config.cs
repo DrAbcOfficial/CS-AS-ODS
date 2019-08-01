@@ -8,8 +8,10 @@ namespace CsAsODS
         public string Save { get; set; } = "Ods";
         public string Lang { get; set; } = "zh-CN";
         public bool Hex { get; set; } = false;
+        public bool ShowTime { get; set; } = true;
+        public bool ShowID { get; set; } = true;
         public bool LogIO { get; set; } = true;
-        public bool Log { get; set; } = true;
+        public int Log { get; set; } = 1;
         public int Retry { get; set; } = 6;
         public int RetryTime { get; set; } = 1;
     }
@@ -46,6 +48,21 @@ namespace CsAsODS
             "Addition"
         };
     }
+    public class SQLExtra
+    {
+        public string Input = "exInput.txt";
+        public string Output = "exOutput.txt";
+        public string Changeput = "exChangeput.txt";
+        public string Finish = "exFinish";
+        public string Sheet = "exSheet";
+        public string[] Structure { get; set; } = {
+            "UID",
+            "SteamID",
+            "UserName",
+            "Content",
+            "Addition"
+        };
+    }
     public class SQLServerConfig
     {
         public int TimeOut { get; set; } = 7;
@@ -56,20 +73,21 @@ namespace CsAsODS
         public string Database { get; set; } = "Ecco";
         public string Account { get; set; } = "root";
         public string Password { get; set; } = "secret";
-
-        public MySQLConfig MySQL = new MySQLConfig();
+        public MySQLConfig MySQL { get; set; } = new MySQLConfig();
     }
     public class SQLData
     {
         public bool Enable { get; set; } = false;
         public string SQLType { get; set; } = "MySql";
         //MySql MariaDB MongoDB Json | Fuck H2
-        public SQLServerConfig SQLNet = new SQLServerConfig();
-        public SQLJsonConfig SQLJson = new SQLJsonConfig();
+        public SQLServerConfig SQLNet { get; set; } = new SQLServerConfig();
+        public SQLJsonConfig SQLJson { get; set; } = new SQLJsonConfig();
         public string SQLInput { get; set; } = "SQLInput.txt";
         public string SQLOutput { get; set; } = "SQLOutput.txt";
         public string SQLChangeput { get; set; } = "SQLChangeput.txt";
         public string SQLFinish { get; set; } = "SQLFinish";
+        public bool ExtraEnable { get; set; } = false;
+        public SQLExtra[] ExtraList { get; set; } = { new SQLExtra() };
     }
     public class Config
     {

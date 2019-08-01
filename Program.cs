@@ -38,9 +38,32 @@ namespace CsAsODS
                     if (ConfData.conf.SQLData.Enable)
                     {
 
-                        Thread SQLThread = new Thread(new ThreadStart(FileWa.ThreadMethod));
+                        Thread SQLThread = new Thread(new ThreadStart(FileWa.Start));
                         SQLThread.Name = "SQLService";
                         SQLThread.Start();
+                        if (ConfData.conf.SQLData.ExtraEnable && ConfData.conf.SQLData.ExtraList.Length > 0)
+                        {
+                            for (int i = 0; i < ConfData.conf.SQLData.ExtraList.Length-1; i++)
+                            {
+                                Thread ExrSQL = new Thread(() =>
+                                {
+                                    CCUtility.g_Utility.ExtThread(() =>
+                                    {
+                                        FileWatcher ExtraSQL = new FileWatcher();
+                                        ExtraSQL.Exr = ConfData.conf.SQLData.ExtraEnable;
+                                        ExtraSQL.structure = ConfData.conf.SQLData.ExtraList[i].Structure;
+                                        ExtraSQL.Suffix = ConfData.conf.SQLData.ExtraList[i].Sheet;
+                                        ExtraSQL.Input = ConfData.conf.SQLData.ExtraList[i].Input;
+                                        ExtraSQL.Output = ConfData.conf.SQLData.ExtraList[i].Output;
+                                        ExtraSQL.Changeput = ConfData.conf.SQLData.ExtraList[i].Changeput;
+                                        ExtraSQL.Finish = ConfData.conf.SQLData.ExtraList[i].Finish;
+                                        ExtraSQL.Start();
+                                    });
+                                });
+                                ExrSQL.Name = ConfData.conf.SQLData.ExtraList[i].Sheet;
+                                ExrSQL.Start();
+                            }
+                        }
                     }
                     else
                         CCUtility.g_Utility.Warn(LangData.lg.SQL.Disable);

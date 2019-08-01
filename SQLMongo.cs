@@ -8,12 +8,13 @@ using System.IO;
 
 namespace CsAsODS
 {
-    class MongoSQL
+    class MongoSQL : SQLabs
     {
-        List<string[]> empty = new List<string[]>();
-        IMongoCollection<BsonDocument> collection = null;
-        IMongoDatabase database = null;
-        public bool Start()
+        //私密参数
+        private IMongoCollection<BsonDocument> collection = null;
+        private IMongoDatabase database = null;
+
+        public override bool Start()
         {
             string MongoConnect = String.Format(
                 "mongodb://{0}:{1}@]{2}:{3}/{4}",
@@ -33,7 +34,7 @@ namespace CsAsODS
                 bool Foundit = false;
                 for (int i = 0; i < arycollection.Length; i++)
                 {
-                    if (arycollection[i] == ConfData.conf.SQLData.SQLNet.Prefix + "_" + ConfData.conf.SQLData.SQLNet.Suffix)
+                    if (arycollection[i] == Prefix + "_" + Suffix)
                     {
                         Foundit = true;
                         break;
@@ -42,14 +43,15 @@ namespace CsAsODS
                 if (Foundit)
                 {
                     //建立collection
-                    collection = database.GetCollection<BsonDocument>(ConfData.conf.SQLData.SQLNet.Prefix + "_" + ConfData.conf.SQLData.SQLNet.Suffix);
+                    collection = database.GetCollection<BsonDocument>(Prefix + "_" + Suffix);
                 }
                 else
                 {
                     CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
                     SQLFirstRun();
                 }
-                CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
+                if (!Exr)
+                    CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
                 return true;
 
             }
@@ -65,9 +67,9 @@ namespace CsAsODS
             // 建表
             try
             {
-                database.CreateCollection(ConfData.conf.SQLData.SQLNet.Prefix + "_" + ConfData.conf.SQLData.SQLNet.Suffix);
+                database.CreateCollection(Prefix + "_" + Suffix);
                 CCUtility.g_Utility.Succ(LangData.lg.SQL.Updated);
-                collection = database.GetCollection<BsonDocument>(ConfData.conf.SQLData.SQLNet.Prefix + "_" + ConfData.conf.SQLData.SQLNet.Suffix);
+                collection = database.GetCollection<BsonDocument>(Prefix + "_" + Suffix);
             }
             catch (Exception e)
             {
@@ -75,15 +77,15 @@ namespace CsAsODS
             }
         }
         //改变时
-        public void OnChanged(object source, FileSystemEventArgs e)
+        public override void OnChanged(object source, FileSystemEventArgs e)
         {
             CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
             Search();
         }
 
-        public void OnUpdate(object source, FileSystemEventArgs e)
+        public override void OnUpdate(object source, FileSystemEventArgs e)
         {
-            string changePath = Program.FileDir + ConfData.conf.SQLData.SQLChangeput;
+            string changePath = Program.FileDir + Changeput;
             CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
             string str = Reader.g_Reader.ReadIt(changePath);
             string[] line = str.Split('\n');
@@ -100,7 +102,7 @@ namespace CsAsODS
             CCUtility.g_Utility.Taskbar(LangData.lg.General.QuestFinish);
         }
 
-        void Update(in string ID, in string Ecco, in string Add)
+        public override void Update(in string ID, in string Ecco, in string Add)
         {
             try
             {
@@ -121,10 +123,10 @@ namespace CsAsODS
         }
 
         //查询请求
-        void Search()
+        public override void Search()
         {
-            string inPath = Program.FileDir + ConfData.conf.SQLData.SQLInput;
-            string outPath = Program.FileDir + ConfData.conf.SQLData.SQLOutput;
+            string inPath = Program.FileDir + Input;
+            string outPath = Program.FileDir + Output;
             string[] line = Reader.g_Reader.ReadIt(inPath).Split(',');
             bool IsExs = false;
             string[] outLine = Reader.g_Reader.ReadIt(outPath).Split('\n');
@@ -151,7 +153,7 @@ namespace CsAsODS
                     op = op + outLine[i] + "\n";
             }
             if (!IsExs)
-                op = op + Request(line[0], line[1]);
+                op += Request(line[0], line[1]);
             CCWriter.g_Writer.Writer(outPath, op);
 
             if (empty.Count != 0)
@@ -165,7 +167,7 @@ namespace CsAsODS
             }
         }
 
-        void Insert(string szID, string szNick, int szEcco, string szAdd)
+        public override void Insert(string szID, string szNick, int szEcco, string szAdd)
         {
             CCUtility.g_Utility.Warn(LangData.lg.SQL.Insert + ": [" + szID + "]");
             //插入SQL
@@ -187,7 +189,7 @@ namespace CsAsODS
             }
         }
 
-        string Request(string szID, string szNick)
+        public override string Request(in string szID, in string szNick)
         {
             try
             {

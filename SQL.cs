@@ -8,54 +8,56 @@ using System.Threading.Tasks;
 
 namespace CsAsODS
 {
-    class SQLRequest
+    class MySQLRequest : SQLabs
     {
-        MySqlConnection SQL_con = null;
-        List<string[]> empty = new List<string[]>();
-        string szConnection = "server=" + ConfData.conf.SQLData.SQLNet.Server + ";" +
-                    "port=" + ConfData.conf.SQLData.SQLNet.Port + ";" +
-                    "database=" + ConfData.conf.SQLData.SQLNet.Database + ";" +
-                    "user=" + ConfData.conf.SQLData.SQLNet.Account + ";" +
-                    "password=" + ConfData.conf.SQLData.SQLNet.Password + ";" +
-                    "Connect Timeout=" + ConfData.conf.SQLData.SQLNet.TimeOut + ";" +
-                    "SslMode=" + ConfData.conf.SQLData.SQLNet.MySQL.SSL + ";" +
-                    "persistsecurityinfo=" + ConfData.conf.SQLData.SQLNet.MySQL.Persist + ";" +
-                    "charset=" + ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-", "").Replace("_", "") + ";" +
-                    "Old Guids=" + ConfData.conf.SQLData.SQLNet.MySQL.OldGUID;
-        public bool Start()
+        string SheetState(in string[] structure)
         {
-            SQL_con = new MySqlConnection(szConnection);
-
-            CCUtility.g_Utility.AutoRetry(() => SQLOpen(SQL_con));//自动重试，防止质量"特别"好的SQL
-            if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == ConfData.conf.SQLData.SQLNet.Prefix + "_" + ConfData.conf.SQLData.SQLNet.Suffix))
+            string szString;
+            if (!Exr)
             {
-                CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
-                SQLFirstRun();
+                szString = string.Format(
+                   "CREATE TABLE `{0}`.`{1}_{2}` ( " +
+                   "`{3}` INT UNSIGNED NOT NULL AUTO_INCREMENT , " +
+                   "`{4}` CHAR(32) CHARACTER SET {8} COLLATE {8}_bin NOT NULL , " +
+                   "`{5}` CHAR(36) CHARACTER SET {8} COLLATE {8}_bin NOT NULL , " +
+                   "`{6}` INT NOT NULL , " +
+                   "`{7}` CHAR(36) CHARACTER SET {8} COLLATE {8}_bin NULL DEFAULT NULL , " +
+                   "PRIMARY KEY (`{3}`, `{4}`)) ENGINE = InnoDB CHARSET={8} COLLATE {8}_bin CHARSET={8};",
+                    Database,
+                    Prefix,
+                    Suffix,
+                    structure[0],
+                    structure[1],
+                    structure[2],
+                    structure[3],
+                    structure[4],
+                    Encode.Replace("-", "").Replace("_", ""));
             }
-            SQL_con.Close();
-            CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
-            return true;
+            else
+            {
+                szString = string.Format("CREATE TABLE `{0}`.`{1}_{2}` ( `{3}` INT UNSIGNED NOT NULL AUTO_INCREMENT ,",
+                                            Database,
+                                            Prefix,
+                                            Suffix,
+                                            structure[0]);
+                for (int i = 1; i < structure.Length; i++)
+                {
+                    szString += string.Format("`{0}` CHAR(36) CHARACTER SET {1} COLLATE {1}_bin NOT NULL ",
+                                            structure[i],
+                                            Encode.Replace("-", "").Replace("_", ""));
+                    if (i != structure.Length - 1)
+                        szString += ",";
+                    else
+                        szString += string.Format(",PRIMARY KEY (`{0}`, `{1}`))", structure[0], structure[1]);
+                }
+                szString += string.Format("ENGINE = InnoDB CHARSET={0} COLLATE {0}_bin;",
+                                            Encode.Replace("-", "").Replace("_", ""));
+            }
+            return szString;
         }
-
         void SQLFirstRun()
         {
-            string createStatement = string.Format(
-               "CREATE TABLE `{0}`.`{1}_{2}` ( " +
-               "`{3}` INT UNSIGNED NOT NULL AUTO_INCREMENT , " +
-               "`{4}` CHAR(32) CHARACTER SET {8} COLLATE {8}_bin NOT NULL , " +
-               "`{5}` CHAR(36) CHARACTER SET {8} COLLATE {8}_bin NOT NULL , " +
-               "`{6}` INT NOT NULL , " +
-               "`{7}` CHAR(36) CHARACTER SET {8} COLLATE {8}_bin NULL DEFAULT NULL , " +
-               "PRIMARY KEY (`{3}`, `{4}`)) ENGINE = InnoDB CHARSET={8} COLLATE {8}_bin CHARSET={8};",
-                ConfData.conf.SQLData.SQLNet.Database,
-                ConfData.conf.SQLData.SQLNet.Prefix,
-                ConfData.conf.SQLData.SQLNet.Suffix,
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[0],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[4],
-                ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-", "").Replace("_", ""));
+            string createStatement = SheetState(structure);
             // 建表
             try
             {
@@ -70,16 +72,41 @@ namespace CsAsODS
                 CCUtility.g_Utility.Error(LangData.lg.SQL.ConError, e);
             }
         }
+        void SQLOpen(MySqlConnection sql)
+        {
+            sql.Open();
+            CCUtility.g_Utility.Succ(LangData.lg.SQL.Connected);
+        }
+        public override bool Start()
+        {
+            //佛祖保佑
+            lock(lockobj)
+            {
+                using (SQL_con = new MySqlConnection(szConnection))
+                {
+                    CCUtility.g_Utility.AutoRetry(() => SQLOpen(SQL_con));//自动重试，防止质量"特别"好的SQL
+                    if (!SQL_con.GetSchema("Tables").AsEnumerable().Any(x => x.Field<string>("TABLE_NAME") == Prefix + "_" + Suffix))
+                    {
+                        CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
+                        SQLFirstRun();
+                    }
+                    SQL_con.Close();
+                }
+            }
+            if (!Exr)
+                CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
+            return true;
+        }
         //改变时
-        public void OnChanged(object source, FileSystemEventArgs e)
+        public override void OnChanged(object source, FileSystemEventArgs e)
         {
             CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
             Search();
         }
-        public void OnUpdate(object source, FileSystemEventArgs e)
+        public override void OnUpdate(object source, FileSystemEventArgs e)
         {
             Task t3 = null;
-            string changePath = Program.FileDir + ConfData.conf.SQLData.SQLChangeput;
+            string changePath = Program.FileDir + Changeput;
             CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
             string str = Reader.g_Reader.ReadIt(changePath);
             if (string.IsNullOrEmpty(str))
@@ -101,7 +128,7 @@ namespace CsAsODS
             CCUtility.g_Utility.Taskbar(LangData.lg.General.QuestFinish);
         }
 
-        void Update(in string ID, in string Ecco, in string Add)
+        public override void Update(in string ID, in string Ecco, in string Add)
         {
             MySqlConnection ThreadPoolCon = new MySqlConnection(szConnection);
             ThreadPoolCon.Open();
@@ -109,24 +136,24 @@ namespace CsAsODS
             if (Add != "")
             {
                 str = String.Format("UPDATE `{0}_{1}` SET `{6}` = '{3}' WHERE `{0}_{1}`.`{5}` = '{2}'; UPDATE `{0}_{1}` SET `{7}` = '{4}' WHERE `{0}_{1}`.`{5}` = '{2}'",
-                ConfData.conf.SQLData.SQLNet.Prefix,
-                ConfData.conf.SQLData.SQLNet.Suffix,
+                Prefix,
+                Suffix,
                 ID,
                 Ecco,
                 Add,
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[4]);
+                structure[1],
+                structure[3],
+                structure[4]);
             }
             else
             {
                 str = String.Format("UPDATE `{0}_{1}` SET `{5}` = '{3}' WHERE `{0}_{1}`.`{4}` = '{2}';",
-                ConfData.conf.SQLData.SQLNet.Prefix,
-                ConfData.conf.SQLData.SQLNet.Suffix,
+                Prefix,
+                Suffix,
                 ID,
                 Ecco,
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3]);
+                structure[1],
+                structure[3]);
             }
             //更新SQL
             MySqlCommand cmd = new MySqlCommand(str, ThreadPoolCon);
@@ -135,10 +162,10 @@ namespace CsAsODS
             ThreadPoolCon.Close();
         }
         //查询请求
-        void Search()
+        public override void Search()
         {
-            string inPath = Program.FileDir + ConfData.conf.SQLData.SQLInput;
-            string outPath = Program.FileDir + ConfData.conf.SQLData.SQLOutput;
+            string inPath = Program.FileDir + Input;
+            string outPath = Program.FileDir + Output;
             string[] line = Reader.g_Reader.ReadIt(inPath).Split(',');
             if (line.Length == 0)
                 return;
@@ -169,7 +196,7 @@ namespace CsAsODS
                     op = op + outLine[i] + "\n";
             }
             if (!IsExs)
-                op = op + Request(line[0], line[1]);
+                op += Request(line[0], line[1]);
             CCWriter.g_Writer.Writer(outPath, op);
 
             SQL_con.Close();
@@ -186,39 +213,39 @@ namespace CsAsODS
             }
         }
 
-        void Insert(string szID, string szNick, int szEcco, string szAdd)
+        public override void Insert(string szID, string szNick, int szEcco, string szAdd)
         {
             string UniNick = CCUtility.g_Utility.get_uft8(CCUtility.g_Utility.FormatNick(szNick));
             CCUtility.g_Utility.Warn(LangData.lg.SQL.Insert + ": [" + szID + "]");
             string str = String.Format(
                 "INSERT INTO `{0}_{1}` (`{6}`, `{7}`, `{8}`, `{9}`) VALUES ('{2}', '{3}', '{4}', '{5}')",
-                ConfData.conf.SQLData.SQLNet.Prefix,
-                ConfData.conf.SQLData.SQLNet.Suffix,
+                Prefix,
+                Suffix,
                 szID,
                 UniNick,
                 szEcco,
                 szAdd,
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[3],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[4]);
+                structure[1],
+                structure[2],
+                structure[3],
+                structure[4]);
             //更新SQL
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
             if (cmd.ExecuteNonQuery() > 0)
                 CCUtility.g_Utility.Succ(LangData.lg.SQL.Inserted);
         }
 
-        string Request(string szID, string szNick)
+        public override string Request(in string szID, in string szNick)
         {
             string UniNick = CCUtility.g_Utility.get_uft8(CCUtility.g_Utility.FormatNick(szNick));
             string str = String.Format(
                 "UPDATE `{0}_{1}` SET `{5}` = '{3}' WHERE `{0}_{1}`.`{4}` = '{2}'; select * from `{0}_{1}` where `{4}`= '{2}'",
-                ConfData.conf.SQLData.SQLNet.Prefix,
-                ConfData.conf.SQLData.SQLNet.Suffix,
+                Prefix,
+                Suffix,
                 szID,
                 UniNick,
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[1],
-                ConfData.conf.SQLData.SQLNet.MySQL.Structure[2]);
+                structure[1],
+                structure[2]);
             //设置查询命令
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
             MySqlDataReader reader = null;
@@ -252,12 +279,6 @@ namespace CsAsODS
                 reader.Close();
             }
             return null;
-        }
-
-        void SQLOpen(MySqlConnection sql)
-        {
-            sql.Open();
-            CCUtility.g_Utility.Succ(LangData.lg.SQL.Connected);
         }
     }
 }

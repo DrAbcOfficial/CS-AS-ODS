@@ -6,31 +6,52 @@ namespace CsAsODS
 {
     class FirstInit
     {
+        public void SQLCreate(in string Changeput, in string Input, in string Output, in string Finish)
+        {
+            if (!File.Exists(Program.FileDir + Changeput))
+                FirstWriter(Program.FileDir + Changeput);
+            if (!File.Exists(Program.FileDir + Input))
+                FirstWriter(Program.FileDir + Input);
+            if (!File.Exists(Program.FileDir + Output))
+                FirstWriter(Program.FileDir + Output);
+            if (!File.Exists(Program.FileDir + Finish))
+                FirstWriter(Program.FileDir + Finish);
+        }
+        private void IPCreate(in string Finish, in string Input, in string Output)
+        {
+            if (!File.Exists(Program.FileDir + Finish))
+                FirstWriter(Program.FileDir + Finish);
+            if (!File.Exists(Program.FileDir + Input))
+                FirstWriter(Program.FileDir + Input);
+            if (!File.Exists(Program.FileDir + Output))
+                FirstWriter(Program.FileDir + Output);
+        }
         public void FirstRun()
         {
             if (ConfData.conf.GeoData.Enable)
-            {
-                if (!File.Exists(Program.FileDir + ConfData.conf.GeoData.IPInput))
-                    FirstWriter(Program.FileDir + ConfData.conf.GeoData.IPInput);
-                if (!File.Exists(Program.FileDir + ConfData.conf.GeoData.IPOutput))
-                    FirstWriter(Program.FileDir + ConfData.conf.GeoData.IPOutput);
-                if (!File.Exists(Program.FileDir + ConfData.conf.GeoData.IPDoneput))
-                    FirstWriter(Program.FileDir + ConfData.conf.GeoData.IPDoneput);
-            }
+                IPCreate(
+                    ConfData.conf.GeoData.IPDoneput,
+                    ConfData.conf.GeoData.IPInput,
+                    ConfData.conf.GeoData.IPOutput);
 
             if (ConfData.conf.SQLData.Enable)
+                SQLCreate(
+                    ConfData.conf.SQLData.SQLChangeput,
+                    ConfData.conf.SQLData.SQLInput,
+                    ConfData.conf.SQLData.SQLOutput,
+                    ConfData.conf.SQLData.SQLFinish);
+            if (ConfData.conf.SQLData.ExtraEnable && ConfData.conf.SQLData.ExtraList.Length > 0)
             {
-                if (!File.Exists(Program.FileDir + ConfData.conf.SQLData.SQLChangeput))
-                    FirstWriter(Program.FileDir + ConfData.conf.SQLData.SQLChangeput);
-                if (!File.Exists(Program.FileDir + ConfData.conf.SQLData.SQLInput))
-                    FirstWriter(Program.FileDir + ConfData.conf.SQLData.SQLInput);
-                if (!File.Exists(Program.FileDir + ConfData.conf.SQLData.SQLOutput))
-                    FirstWriter(Program.FileDir + ConfData.conf.SQLData.SQLOutput);
-                if (!File.Exists(Program.FileDir + ConfData.conf.SQLData.SQLFinish))
-                    FirstWriter(Program.FileDir + ConfData.conf.SQLData.SQLFinish);
+                for (int i = 0; i < ConfData.conf.SQLData.ExtraList.Length; i++)
+                {
+                    SQLCreate(
+                        ConfData.conf.SQLData.ExtraList[i].Changeput,
+                        ConfData.conf.SQLData.ExtraList[i].Input,
+                        ConfData.conf.SQLData.ExtraList[i].Output,
+                        ConfData.conf.SQLData.ExtraList[i].Finish);
+                }
             }
         }
-
         private void FirstWriter(in string outPath)
         {
             try

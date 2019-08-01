@@ -5,14 +5,16 @@ using System.IO;
 
 namespace CsAsODS
 {
-    class JsonSQL
+    class JsonSQL : SQLabs
     {
-        string JsonFile = String.Format("{1}/Sql/{0}.json",
-                                        ConfData.conf.SQLData.SQLJson.FileName,
-                                        Program.FileDir + ConfData.conf.General.Save);
+        //私密参数
+        private string JsonFile = string.Format("{0}/Sql/", Program.FileDir + ConfData.conf.General.Save);
+
         Dictionary<string, JsonCollection> JsonData = new Dictionary<string, JsonCollection>();
-        public bool Start()
+        public override bool Start()
         {
+            JsonFile += string.Format("{0}.json", Suffix);
+
             if (!Directory.Exists(Program.FileDir + ConfData.conf.General.Save + "/Sql") || !File.Exists(JsonFile))
             {
                 CCUtility.g_Utility.Warn(LangData.lg.SQL.FirstRun);
@@ -21,18 +23,19 @@ namespace CsAsODS
             }
             else
                 JsonData = JsonConvert.DeserializeObject<Dictionary<string, JsonCollection>>(Reader.g_Reader.ReadIt(JsonFile), new JsonSerializerSettings() { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii });
-            CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
+            if (!Exr)
+                CCUtility.g_Utility.Succ(LangData.lg.SQL.Running + ": " + ConfData.conf.SQLData.SQLType);
             return true;
         }
-        public void OnChanged(object source, FileSystemEventArgs e)
+        public override void OnChanged(object source, FileSystemEventArgs e)
         {
             CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
             Search();
         }
 
-        public void OnUpdate(object source, FileSystemEventArgs e)
+        public override void OnUpdate(object source, FileSystemEventArgs e)
         {
-            string changePath = Program.FileDir + ConfData.conf.SQLData.SQLChangeput;
+            string changePath = Program.FileDir + Changeput;
             CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
             string str = Reader.g_Reader.ReadIt(changePath);
             string[] line = str.Split('\n');
@@ -47,8 +50,7 @@ namespace CsAsODS
             }
             CCUtility.g_Utility.Taskbar(LangData.lg.General.QuestFinish);
         }
-
-        void Update(in string szID, in string szEcco, in string szAdd)
+        public override void Update(in string szID, in string szEcco, in string szAdd)
         {
             if (JsonData.ContainsKey(szID))
             {
@@ -62,10 +64,10 @@ namespace CsAsODS
         }
 
         //查询请求
-        void Search()
+        public override void Search()
         {
-            string inPath = Program.FileDir + ConfData.conf.SQLData.SQLInput;
-            string outPath = Program.FileDir + ConfData.conf.SQLData.SQLOutput;
+            string inPath = Program.FileDir + Input;
+            string outPath = Program.FileDir + Output;
             string[] line = Reader.g_Reader.ReadIt(inPath).Split(',');
             bool IsExs = false;
             string[] outLine = Reader.g_Reader.ReadIt(outPath).Split('\n');
@@ -94,11 +96,11 @@ namespace CsAsODS
                     op = op + outLine[i] + "\n";
             }
             if (!IsExs)
-                op = op + Request(line[0], line[1]);
+                op += Request(line[0], line[1]);
             CCWriter.g_Writer.Writer(outPath, op);
         }
 
-        string Request(in string szID, in string szNick)
+        public override string Request(in string szID, in string szNick)
         {
             try
             {
@@ -144,6 +146,10 @@ namespace CsAsODS
             {
                 CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed, e);
             }
+        }
+        public override void Insert(string szID, string szNick, int szEcco, string szAdd)
+        {
+            throw new NotImplementedException();
         }
     }
     class JsonCollection
