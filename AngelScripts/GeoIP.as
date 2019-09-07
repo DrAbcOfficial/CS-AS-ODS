@@ -8,6 +8,12 @@ namespace CIPAdderss
 	const string FileDir	= "scripts/plugins/store/IPOutput.txt";
 	const string FileOut	= "scripts/plugins/store/IPInput.txt";
 	const string DoneFilePath	= "scripts/plugins/store/IPDoneput";
+	const string sNotWelcome = "Your country is not welcome on this server.";
+	const array<string> banNation = 
+								{
+									"BG"
+								};
+
 	string ThatDay;
 	dictionary GeoIPDataBase;
 
@@ -55,6 +61,12 @@ namespace CIPAdderss
 		}
 		return JoinReason;
 	}
+
+	void Kick (string&in sId, string&in sReason)
+	{
+		g_EngineFuncs.ServerCommand("kick #"+ sId + sNotWelcome + " \"[" + sReason + "\"]\n");
+	}
+
 	void ReadIP()
 	{
 		File @pFile = g_FileSystem.OpenFile( FileDir , OpenFile::READ );
@@ -105,10 +117,20 @@ namespace CIPAdderss
 	{			
 		CCIPData@ data = null;
 		if(GeoIPDataBase.exists(szID))
-			@ data = cast<CCIPData@>(GeoIPDataBase[szID]);
+		{
+			@data = cast<CCIPData@>(GeoIPDataBase[szID]);
+
+			if( banNation.find(data.Code) != -1 )
+				CIPAdderss::Kick(szID, data.Code);
+			else
+				CIPAdderss::SayToAll("["+ CIPAdderss::JoinTitle + "]玩家:" +Name+ "[" + data.Code + "]"+"来自["+ data.Country + "|" + data.Region + "|" + data.City + "]" + CIPAdderss::JoinCast() + ".\n");	//来了
+		}
 		else
-			@ data = cast<CCIPData@>(GeoIPDataBase["Unkown"]);
-		CIPAdderss::SayToAll("["+ CIPAdderss::JoinTitle + "]玩家:" +Name+ "[" + data.Code + "]"+"来自["+ data.Country + "|" + data.Region + "|" + data.City + "]" + CIPAdderss::JoinCast() + ".\n");	//来了
+		{
+			@data = cast<CCIPData@>(GeoIPDataBase["Unkown"]);
+			CIPAdderss::SayToAll("["+ CIPAdderss::JoinTitle + "]玩家:" +Name+ "[" + data.Code + "]"+"来自["+ data.Country + "|" + data.Region + "|" + data.City + "]" + CIPAdderss::JoinCast() + ".\n");	//来了
+		}
+		
 	}
 	
 	void CastLeave( CBasePlayer@ pPlayer )
@@ -168,7 +190,7 @@ class CCIPData
 void PluginInit()
 {
 	g_Module.ScriptInfo.SetAuthor("Dr.Abc");
-	g_Module.ScriptInfo.SetContactInfo("https://github.com/DrAbcrealone");
+	g_Module.ScriptInfo.SetContactInfo("Bruh.");
 	
 	CCIPData data;
 	data.Code = "UNK";
@@ -210,6 +232,7 @@ HookReturnCode ClientPutInServer(CBasePlayer@ pPlayer)
 	const string szSteamId = g_EngineFuncs.GetPlayerAuthId(pPlayer.edict());
 	if(!CIPAdderss::GeoIPDataBase.exists(szSteamId))
 		CIPAdderss::ReadIP();
+	
 	CIPAdderss::BroadIPAddress(pPlayer.pev.netname, szSteamId );
 	return HOOK_HANDLED;
 }
