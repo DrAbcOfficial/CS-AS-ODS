@@ -40,8 +40,22 @@ namespace CsAsODS
         public string Retrying { get; set; } = "正在重试第 {0} 次...线程编号：{1}";
 
     }
+
+    public class LangSqlDataSet
+    {
+        public string ChangeDataFail { get; set; } = "更改内存数据表列失败";
+        public string ChangeDataSucc { get; set; } = "更改内存数据表列成功";
+        public string InsertDataFail { get; set; } = "插入内存数据表列失败";
+        public string InsertDataSucc { get; set; } = "插入内存数据表列成功";
+        public string SearchData { get; set; } = "开始查找内存数据";
+        public string SearchSucc { get; set; } = "查找内存数据成功";
+        public string SearchFail { get; set; } = "查找内存数据失败";
+        public string GetDataSetFail { get; set; } = "获取SQL数据表失败";
+        public string GetDataSetSucc { get; set; } = "获取SQL数据表成功";
+    }
     public class LangSQL
     {
+        public LangSqlDataSet SqlDataSet = new LangSqlDataSet();
         public string Disable { get; set; } = "设置没有开启SQL服务";
         public string Running { get; set; } = "正在运行SQL服务";
         public string Connected { get; set; } = "SQL服务器链接成功！";

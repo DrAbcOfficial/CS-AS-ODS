@@ -38,13 +38,13 @@ namespace CsAsODS
             LogWriteLock.EnterWriteLock();
             //把异常信息输出到文件
             StreamWriter fs = new StreamWriter(LogName, true);
-            fs.WriteLine("<===================================================================>");
+            fs.WriteLine("===================================================================>");
             fs.WriteLine("[1] " + LangData.lg.General.Log.Time + ": " + DateTime.Now.ToString());
             fs.WriteLine("[2] " + LangData.lg.General.Log.Message + ": " + e.Message);
             fs.WriteLine("[3] " + LangData.lg.General.Log.Source + ": " + e.Source);
             fs.WriteLine("[4] " + LangData.lg.General.Log.StackTrace + ": \n" + e.StackTrace.Trim());
             fs.WriteLine("[5] " + LangData.lg.General.Log.TargetSite + ": " + e.TargetSite);
-            fs.WriteLine("<===================================================================>");
+            fs.WriteLine("<===================================================================");
             fs.WriteLine();
             fs.Close();
             //佛祖保佑别异常
@@ -142,6 +142,14 @@ namespace CsAsODS
             FormatCon("[Success]" + szInput);
             TextColor();
         }
+
+        //测试输出用
+        public void HighLight(in string szInput)
+        {
+            TextColor("White");
+            FormatCon("[T E S T]" + szInput);
+            TextColor();
+        }
         public void Taskbar(in string szInput)
         {
             TextColor();
@@ -160,7 +168,7 @@ namespace CsAsODS
         }
         public void FormatCon(in string szInput)
         {
-            string szLog = string.Format("==>{0}|{1}  {2}.",
+            string szLog = string.Format("{0}|{1}\t{2}.",
                 ConfData.conf.General.ShowTime ? "[" + DateTime.Now.ToString() + "]" : "",
                 ConfData.conf.General.ShowID ? "[" + Thread.CurrentThread.ManagedThreadId.ToString() + "]" : "",
                 szInput);
@@ -169,7 +177,7 @@ namespace CsAsODS
                 WriteRunLog(szLog);
         }
         //彩色字体
-        private void TextColor(string colorName = "White")
+        private void TextColor(string colorName = "Gray")
         {
             try
             {
@@ -207,7 +215,7 @@ namespace CsAsODS
                 return false;
         }
 
-        public string get_uft8(in string unicodeString)
+        public string Get_uft8(in string unicodeString)
         {
             UTF8Encoding utf8 = new UTF8Encoding();
             byte[] encodedBytes = utf8.GetBytes(unicodeString);

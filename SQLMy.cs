@@ -1,6 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -159,6 +158,7 @@ namespace CsAsODS
             MySqlCommand cmd = new MySqlCommand(str, ThreadPoolCon);
             if (cmd.ExecuteNonQuery() < 0)
                 CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed + ": " + ID + ":" + Ecco);
+            cmd.Dispose();
             ThreadPoolCon.Close();
         }
         //查询请求
@@ -215,7 +215,7 @@ namespace CsAsODS
 
         public override void Insert(string szID, string szNick, int szEcco, string szAdd)
         {
-            string UniNick = CCUtility.g_Utility.get_uft8(CCUtility.g_Utility.FormatNick(szNick));
+            string UniNick = CCUtility.g_Utility.Get_uft8(CCUtility.g_Utility.FormatNick(szNick));
             CCUtility.g_Utility.Warn(LangData.lg.SQL.Insert + ": [" + szID + "]");
             string str = String.Format(
                 "INSERT INTO `{0}_{1}` (`{6}`, `{7}`, `{8}`, `{9}`) VALUES ('{2}', '{3}', '{4}', '{5}')",
@@ -233,11 +233,12 @@ namespace CsAsODS
             MySqlCommand cmd = new MySqlCommand(str, SQL_con);
             if (cmd.ExecuteNonQuery() > 0)
                 CCUtility.g_Utility.Succ(LangData.lg.SQL.Inserted);
+            cmd.Dispose();
         }
 
         public override string Request(in string szID, in string szNick)
         {
-            string UniNick = CCUtility.g_Utility.get_uft8(CCUtility.g_Utility.FormatNick(szNick));
+            string UniNick = CCUtility.g_Utility.Get_uft8(CCUtility.g_Utility.FormatNick(szNick));
             string str = String.Format(
                 "UPDATE `{0}_{1}` SET `{5}` = '{3}' WHERE `{0}_{1}`.`{4}` = '{2}'; select * from `{0}_{1}` where `{4}`= '{2}'",
                 Prefix,
@@ -276,6 +277,7 @@ namespace CsAsODS
             }
             finally
             {
+                cmd.Dispose();
                 reader.Close();
             }
             return null;

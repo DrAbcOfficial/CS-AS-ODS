@@ -19,6 +19,7 @@ namespace CsAsODS
     public class GeoData
     {
         public bool Enable { get; set; } = true;
+        public string IPUrl { get; set; } = "http://ip-api.com/json/{0}?lang={1}";
         public string IPInput { get; set; } = "IPInput.txt";
         public string IPOutput { get; set; } = "IPOutput.txt";
         public string IPDoneput { get; set; } = "IPDoneput";
@@ -28,6 +29,8 @@ namespace CsAsODS
             "regionName",
             "city"
         };
+        public string[][] SpecialReturn { get; set; } = { };
+        //STEAMID 其他的
     }
     public class SQLJsonConfig
     {
@@ -35,6 +38,8 @@ namespace CsAsODS
     }
     public class MySQLConfig
     {
+        public bool UseDataSet { get; set; } = true;
+        public int DataSetSyncTime { get; set; } = 60;
         public bool OldGUID { get; set; } = true;
         public bool Persist { get; set; } = true;
         public bool Unicode { get; set; } = true;
@@ -58,9 +63,9 @@ namespace CsAsODS
         public string[] Structure { get; set; } = {
             "UID",
             "SteamID",
-            "UserName",
-            "Content",
-            "Addition"
+            "Content1",
+            "Content2",
+            "Content3"
         };
     }
     public class SQLServerConfig

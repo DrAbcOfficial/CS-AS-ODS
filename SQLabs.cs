@@ -6,19 +6,25 @@ namespace CsAsODS
 {
     abstract class SQLabs
     {
-        //公共传参
+        #region 公共传参
         public bool Exr = false;
         public string[] structure = ConfData.conf.SQLData.SQLNet.MySQL.Structure;
         public string Suffix = ConfData.conf.SQLData.SQLNet.Suffix;
         public string Changeput = ConfData.conf.SQLData.SQLChangeput;
         public string Input = ConfData.conf.SQLData.SQLInput;
         public string Output = ConfData.conf.SQLData.SQLOutput;
-        //mnutable
-        public MySqlConnection SQL_con = null;
-        public List<string[]> empty = new List<string[]>();
-        //线程锁
+        #endregion
+
+        #region mutable
+        protected MySqlConnection SQL_con = null;
+        protected List<string[]> empty = new List<string[]>();
+        #endregion
+
+        #region 线程锁
         public object lockobj = new object();
-        //只读参数
+        #endregion
+
+        #region 常量
         public readonly string Prefix = ConfData.conf.SQLData.SQLNet.Prefix;
         public readonly string Database = ConfData.conf.SQLData.SQLNet.Database;
         public readonly string Encode = ConfData.conf.SQLData.SQLNet.MySQL.Encode;
@@ -32,6 +38,8 @@ namespace CsAsODS
                     "persistsecurityinfo=" + ConfData.conf.SQLData.SQLNet.MySQL.Persist + ";" +
                     "charset=" + ConfData.conf.SQLData.SQLNet.MySQL.Encode.Replace("-", "").Replace("_", "") + ";" +
                     "Old Guids=" + ConfData.conf.SQLData.SQLNet.MySQL.OldGUID;
+        #endregion
+
         public abstract bool Start();
         public abstract void OnChanged(object source, FileSystemEventArgs e);
         public abstract void OnUpdate(object source, FileSystemEventArgs e);

@@ -35,12 +35,39 @@ namespace CsAsODS
             // 开始监听
             fsw.EnableRaisingEvents = true;
             //改变时
+
+            string[] IsInList(string SteamID)
+            {
+                foreach(string[] SteamList in ConfData.conf.GeoData.SpecialReturn)
+                {
+                    if (SteamList[0] == SteamID)
+                        return SteamList;
+                }
+                return null;
+            }
+
             void OnChanged(object source, FileSystemEventArgs e)
             {
                 CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.GeoIP.Changed);
                 try
                 {
-                    Write(GeoIt(Reader.g_Reader.ReadIt(ConfData.conf.GeoData.IPInput).Split(',')[1].Split(':')[0]), Reader.g_Reader.ReadIt(ConfData.conf.GeoData.IPInput).Split(',')[0]);
+                    string[] parame = Reader.g_Reader.ReadIt(ConfData.conf.GeoData.IPInput).Split(',');
+                    string location = GeoIt(parame[1].Split(':')[0]);
+                    string[] Special = IsInList(parame[0]);
+
+                    if(Special != null)
+                    {
+                        location = "";
+                        foreach(string sz in Special)
+                        {
+                            location += sz + ",";
+                        }
+                        location = location.Substring(0, location.Length - 1);
+                        string outPath = Program.FileDir + ConfData.conf.GeoData.IPOutput;
+                        CCWriter.g_Writer.Writer(outPath, location);
+                    }
+                    else
+                        Write(location, parame[0]);
                 }
                 catch (Exception ex)
                 {
@@ -74,7 +101,6 @@ namespace CsAsODS
                 }
                 if (!IsExs)
                     op = op + ID + "," + FormatIpBack(output);
-
                 CCWriter.g_Writer.Writer(outPath, op);
             }
 
@@ -115,8 +141,6 @@ namespace CsAsODS
                 }
                 return "";
             }
-
-
             string GeoIt(in string ipAdd)
             {
                 if (string.IsNullOrEmpty(ipAdd))
@@ -128,7 +152,7 @@ namespace CsAsODS
                     CCUtility.g_Utility.Dialog(LangData.lg.GeoIP.SendingAdd + ": " + ipAdd + "...");
 
                 //发送地址
-                string url = "http://ip-api.com/json/" + ipAdd + "?lang=" + ConfData.conf.General.Lang;
+                string url = string.Format(ConfData.conf.GeoData.IPUrl, ipAdd, ConfData.conf.General.Lang);
                 string str = "";
                 WebRequest wRequest = WebRequest.Create(url);
                 wRequest.Method = "GET";

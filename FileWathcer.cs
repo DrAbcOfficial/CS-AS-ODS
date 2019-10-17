@@ -4,34 +4,50 @@ namespace CsAsODS
 {
     class FileWatcher
     {
-        //公共传参
+        #region 公共传参
         public bool Exr = false;
         public string[] structure = ConfData.conf.SQLData.SQLNet.MySQL.Structure;
-        public string Suffix = ConfData.conf.SQLData.SQLNet.Suffix;
+        public string szSuffix = ConfData.conf.SQLData.SQLNet.Suffix;
         public string Changeput = ConfData.conf.SQLData.SQLChangeput;
         public string Input = ConfData.conf.SQLData.SQLInput;
         public string Output = ConfData.conf.SQLData.SQLOutput;
         public string Finish = ConfData.conf.SQLData.SQLFinish;
-        //私密参数
+        #endregion
+        #region 私密参数
         private FileSystemWatcher fsw = null, fswc = null;
-        private MySQLRequest clMySQL = new MySQLRequest();
-        private MongoSQL clMongoSQL = new MongoSQL();
-        private JsonSQL clJsonSQL = new JsonSQL();
+        private readonly MySqlSync clMySQLSync =  new MySqlSync();
+        private readonly MySQLRequest clMySQL = new MySQLRequest();
+        private readonly MongoSQL clMongoSQL = new MongoSQL();
+        private readonly JsonSQL clJsonSQL = new JsonSQL();
+        #endregion
 
         private bool MySQLStart()
         {
-            clMySQL.Exr = Exr;
-            clMySQL.structure = structure;
-            clMySQL.Suffix = Suffix;
-            clMySQL.Input = Input;
-            clMySQL.Output = Output;
-            clMySQL.Changeput = Changeput;
-            return clMySQL.Start();
+            if(ConfData.conf.SQLData.SQLNet.MySQL.UseDataSet)
+            {
+                clMySQLSync.Exr = Exr;
+                clMySQLSync.structure = structure;
+                clMySQLSync.Suffix = szSuffix;
+                clMySQLSync.Input = Input;
+                clMySQLSync.Output = Output;
+                clMySQLSync.Changeput = Changeput;
+                return clMySQLSync.Start();
+            }
+            else
+            {
+                clMySQL.Exr = Exr;
+                clMySQL.structure = structure;
+                clMySQL.Suffix = szSuffix;
+                clMySQL.Input = Input;
+                clMySQL.Output = Output;
+                clMySQL.Changeput = Changeput;
+                return clMySQL.Start();
+            }
         }
         private bool MongoStart()
         {
             clMongoSQL.Exr = Exr;
-            clMongoSQL.Suffix = Suffix;
+            clMongoSQL.Suffix = szSuffix;
             clMongoSQL.Input = Input;
             clMongoSQL.Output = Output;
             clMongoSQL.Changeput = Changeput;
@@ -40,7 +56,7 @@ namespace CsAsODS
         private bool JsonStart()
         {
             clJsonSQL.Exr = Exr;
-            clJsonSQL.Suffix = Suffix;
+            clJsonSQL.Suffix = Exr ? szSuffix : ConfData.conf.SQLData.SQLJson.FileName;
             clJsonSQL.Input = Input;
             clJsonSQL.Output = Output;
             clJsonSQL.Changeput = Changeput;
@@ -96,24 +112,39 @@ namespace CsAsODS
             // 开始监听
             fswc.EnableRaisingEvents = true;
         }
+
+        void MysqlOnChanged(object source, FileSystemEventArgs e)
+        {
+            if (ConfData.conf.SQLData.SQLNet.MySQL.UseDataSet)
+                clMySQLSync.OnChanged(source, e);
+            else
+                clMySQL.OnChanged(source, e);
+        }
         void OnChanged(object source, FileSystemEventArgs e)
         {
             switch (ConfData.conf.SQLData.SQLType)
             {
-                default: clMySQL.OnChanged(source, e); break;
-                case "MySql": clMySQL.OnChanged(source, e); break;
-                case "MariaDB": clMySQL.OnChanged(source, e); break;
+                default: MysqlOnChanged(source, e); break;
+                case "MySql": MysqlOnChanged(source, e); break;
+                case "MariaDB": MysqlOnChanged(source, e); break;
                 case "MongoDB": clMongoSQL.OnChanged(source, e); break;
                 case "Json": clJsonSQL.OnChanged(source, e); break;
             }
+        }
+        void MysqlOnUpdate(object source, FileSystemEventArgs e)
+        {
+            if (ConfData.conf.SQLData.SQLNet.MySQL.UseDataSet)
+                clMySQLSync.OnUpdate(source, e);
+            else
+                clMySQL.OnUpdate(source, e);
         }
         void OnUpdate(object source, FileSystemEventArgs e)
         {
             switch (ConfData.conf.SQLData.SQLType)
             {
-                default: clMySQL.OnUpdate(source, e); break;
-                case "MySql": clMySQL.OnUpdate(source, e); break;
-                case "MariaDB": clMySQL.OnUpdate(source, e); break;
+                default: MysqlOnUpdate(source, e); break;
+                case "MySql": MysqlOnUpdate(source, e); break;
+                case "MariaDB": MysqlOnUpdate(source, e); break;
                 case "MongoDB": clMongoSQL.OnUpdate(source, e); break;
                 case "Json": clJsonSQL.OnUpdate(source, e); break;
             }

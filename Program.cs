@@ -7,9 +7,9 @@ namespace CsAsODS
     {
         public static readonly string FileDir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
         public static CancellationTokenSource cts = new CancellationTokenSource();
+        public static FileWatcher FileWa = null;
         static void Main(string[] Arg)
         {
-            FileWatcher FileWa = new FileWatcher();
             //骚气的标题
             Console.Title = "[" + DateTime.Now.ToShortDateString().ToString() + "]" + "Sven-Coop CS-AS ODS";
             Console.WriteLine(
@@ -29,17 +29,22 @@ namespace CsAsODS
                     if (ConfData.conf.GeoData.Enable)
                     {
                         g_GeoIP = new GeoIP();
-                        Thread GeoIPThread = new Thread(new ThreadStart(g_GeoIP.GeoWatcher));
-                        GeoIPThread.Name = "GeoIP";
+                        Thread GeoIPThread = new Thread(new ThreadStart(g_GeoIP.GeoWatcher))
+                        {
+                            Name = "GeoIP"
+                        };
                         GeoIPThread.Start();
                     }
                     else
                         CCUtility.g_Utility.Warn(LangData.lg.GeoIP.Disable);
+
                     if (ConfData.conf.SQLData.Enable)
                     {
-
-                        Thread SQLThread = new Thread(new ThreadStart(FileWa.Start));
-                        SQLThread.Name = "SQLService";
+                        FileWa = new FileWatcher();
+                        Thread SQLThread = new Thread(new ThreadStart(FileWa.Start))
+                        {
+                            Name = "SQLService"
+                        };
                         SQLThread.Start();
                         if (ConfData.conf.SQLData.ExtraEnable && ConfData.conf.SQLData.ExtraList.Length > 0)
                         {
@@ -49,18 +54,22 @@ namespace CsAsODS
                                 {
                                     CCUtility.g_Utility.ExtThread(() =>
                                     {
-                                        FileWatcher ExtraSQL = new FileWatcher();
-                                        ExtraSQL.Exr = ConfData.conf.SQLData.ExtraEnable;
-                                        ExtraSQL.structure = ConfData.conf.SQLData.ExtraList[i].Structure;
-                                        ExtraSQL.Suffix = ConfData.conf.SQLData.ExtraList[i].Sheet;
-                                        ExtraSQL.Input = ConfData.conf.SQLData.ExtraList[i].Input;
-                                        ExtraSQL.Output = ConfData.conf.SQLData.ExtraList[i].Output;
-                                        ExtraSQL.Changeput = ConfData.conf.SQLData.ExtraList[i].Changeput;
-                                        ExtraSQL.Finish = ConfData.conf.SQLData.ExtraList[i].Finish;
+                                        FileWatcher ExtraSQL = new FileWatcher
+                                        {
+                                            Exr = ConfData.conf.SQLData.ExtraEnable,
+                                            structure = ConfData.conf.SQLData.ExtraList[i].Structure,
+                                            szSuffix = ConfData.conf.SQLData.ExtraList[i].Sheet,
+                                            Input = ConfData.conf.SQLData.ExtraList[i].Input,
+                                            Output = ConfData.conf.SQLData.ExtraList[i].Output,
+                                            Changeput = ConfData.conf.SQLData.ExtraList[i].Changeput,
+                                            Finish = ConfData.conf.SQLData.ExtraList[i].Finish
+                                        };
                                         ExtraSQL.Start();
                                     });
-                                });
-                                ExrSQL.Name = ConfData.conf.SQLData.ExtraList[i].Sheet;
+                                })
+                                {
+                                    Name = ConfData.conf.SQLData.ExtraList[i].Sheet
+                                };
                                 ExrSQL.Start();
                             }
                         }
