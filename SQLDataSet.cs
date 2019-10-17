@@ -1,7 +1,9 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Data;
+using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CsAsODS
 {
@@ -18,20 +20,50 @@ namespace CsAsODS
             }
             return null;
         }
+        public override void OnUpdate(object source, FileSystemEventArgs e)
+        {
+            Task t3 = null;
+            string changePath = Program.FileDir + Changeput;
+            CCUtility.g_Utility.FileWatcherLog(e.Name + LangData.lg.SQL.Changed);
+            string str = Reader.g_Reader.ReadIt(changePath);
+            if (string.IsNullOrEmpty(str))
+                return;
+            string[] line = str.Split('\n');
+            for (int i = 0; i < line.Length; i++)
+            {
+                if (!string.IsNullOrEmpty(line[i]))
+                {
+                    string[] sz = line[i].ToString().Split(',');
+                    t3 = Task.Factory.StartNew(() => Update(sz[0], sz[1], sz.Length > 2 ? sz[2] : ""));
+                    //不越界
+                }
+            }
+            Task.WaitAll(t3);
+            CCUtility.g_Utility.Succ(LangData.lg.SQL.SqlDataSet.ChangeDataSucc);
+        }
         public override void Update(in string ID, in string Ecco, in string Add)
         {
             try
             {
-                ChangeDataSet(ID, Ecco, Add);
+                using (DataTable table = g_dataSet.Tables[0])
+                {
+                    DataRow row = GetRowFromId(ID, table);
+                    if (row != null)
+                    {
+                        row[structure[1]] = ID;
+                        row[structure[3]] = Ecco;
+                        row[structure[4]] = Add;
+                    }
+                    else
+                        return;
+
+                    table.ImportRow(row);
+                }
             }
             catch (Exception e)
             {
                 CCUtility.g_Utility.Error(LangData.lg.SQL.SqlDataSet.ChangeDataFail, e);
                 return;
-            }
-            finally
-            {
-                CCUtility.g_Utility.Error(LangData.lg.SQL.SqlDataSet.ChangeDataSucc);
             }
         }
 
@@ -168,12 +200,13 @@ namespace CsAsODS
                                     SQL_con.Open();
                                     try
                                     {
+                                        adapter.FillSchema(g_dataSet, SchemaType.Mapped);
                                         adapter.Update(g_dataSet, ConfData.conf.SQLData.SQLNet.Prefix + "_" + Suffix);
-                                        CCUtility.g_Utility.Succ(LangData.lg.SQL.SqlDataSet.ChangeDataSucc);
+                                        CCUtility.g_Utility.Succ(LangData.lg.SQL.Updated);
                                     }
                                     catch (Exception e)
                                     {
-                                        CCUtility.g_Utility.Error(LangData.lg.SQL.SqlDataSet.ChangeDataFail, e);
+                                        CCUtility.g_Utility.Error(LangData.lg.SQL.UpdateFailed, e);
                                     }
                                 }
                             }
@@ -197,6 +230,7 @@ namespace CsAsODS
                     {
                         try
                         {
+                            adapter.FillSchema(g_dataSet, SchemaType.Mapped);
                             adapter.Fill(g_dataSet, ConfData.conf.SQLData.SQLNet.Prefix + "_" + Suffix);
                             CCUtility.g_Utility.Succ(LangData.lg.SQL.SqlDataSet.GetDataSetSucc);
                         }
@@ -211,23 +245,6 @@ namespace CsAsODS
             }
             return true;
         }
-        bool ChangeDataSet(in string ID, in string Content1, in string Add)
-        {
-            using (DataTable table = g_dataSet.Tables[0])
-            {
-                DataRow row = GetRowFromId(ID, table);
-                if (row != null)
-                {
-                    row[structure[1]] = ID;
-                    row[structure[3]] = Content1;
-                    row[structure[4]] = Add;
-                }
-                else
-                    return false;
-
-                table.ImportRow(row);
-            }
-            return true;
-        }
+        
     }
 }
